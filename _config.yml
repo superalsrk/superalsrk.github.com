@@ -4,7 +4,7 @@
 
 # Site
 title: 叠搭宝箱
-subtitle: 
+subtitle:
 description: 关于技术的一些日志
 author: SRK.Lyu
 language:
@@ -68,6 +68,13 @@ disqus_shortname: srkbox
 ## Themes: http://hexo.io/themes/
 theme: landscape-cn
 
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
+sitemap:
+    path: sitemap.xml
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
