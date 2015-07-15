@@ -9,7 +9,7 @@ keywords: "cas原理,cas源码分析,cas部署, cas无https配置"
 ##预备知识
 
 
-具体的CAS协议见, [CAS Protocal](http://jasig.github.io/cas/4.0.0/protocol/CAS-Protocol.html),接下来我们讲jasig的CAS Implementation的几个重要的点，以下所有描述都基于版本 [3.5.2.1](http://mvnrepository.com/artifact/org.jasig.cas/cas-server-core/3.5.2.1)
+具体的CAS协议见, [CAS Protocal](http://jasig.github.io/cas/4.0.x/protocol/CAS-Protocol.html),接下来我们讲jasig的CAS Implementation的几个重要的点，以下所有描述都基于版本 [3.5.2.1](http://mvnrepository.com/artifact/org.jasig.cas/cas-server-core/3.5.2.1)
 <!--more-->
 
 JASIG有以下几个比较重要的接口
@@ -56,3 +56,5 @@ JASIG有以下几个比较重要的接口
 
 > 1. 参数p:cookieSecure="true"，TRUE为采用HTTPS验证，与deployerConfigContext.xml的参数保持一致。
 > 2. 参数p:cookieMaxAge="-1"，简单说是COOKIE的最大生命周期，-1为无生命周期，即只在当前打开的IE窗口有效，IE关闭或重新打开其它窗口，仍会要求验证。可以根据需要修改为大于0的数字，比如3600等，意思是在3600秒内，打开任意IE窗口，都不需要验证。
+
+THE END

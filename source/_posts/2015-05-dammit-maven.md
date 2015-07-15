@@ -25,7 +25,7 @@ toc: true
 
 ```xml
 <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 </properties>
 ```
 
@@ -39,7 +39,7 @@ toc: true
         <configuration>
             <source>1.7</source>
             <target>1.7</target>
-            <encoding>UTF-8</encoding> 
+            <encoding>UTF-8</encoding>
         </configuration>
 </plugin>
 ```
@@ -61,7 +61,7 @@ toc: true
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
     </resource>
-    
+
     <resource>
         <directory>src/main/java</directory>
         <includes>
@@ -77,3 +77,5 @@ toc: true
 
 ## 其他
 配xml不能随便，不能随便
+
+THE END

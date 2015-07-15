@@ -3,7 +3,7 @@
 title: 如何编写一个JS库
 date: 2014-12-17 20:38:24
 tags: ['前端']
-description: "实现JS Library常用的几种方式"
+description: "实现JavaScript Library常用的几种方式"
 keywords: "js模式,javascript模版,javascript设计模式"
 toc: true
 ---
@@ -81,3 +81,5 @@ toc: true
 
 i18n是吧那些国际话的字符全都放到defautls，比较优雅的做法是defaults定义一个对象，这样国际化文件
 便能和原有的库文件进行分离，具体参考 [bootstrap-datapicker]()
+
+THE END

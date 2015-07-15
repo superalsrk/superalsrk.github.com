@@ -1,6 +1,6 @@
 ---
 
-title: Build Your Own Cas Service - Pro 
+title: Build Your Own Cas Service - Pro
 date: 2015-01-06 13:21:17
 tags: ['工具']
 description: "对JASIG-CAS进行页面和业务的扩展具体步骤"
@@ -27,7 +27,7 @@ Credentials是一个用户凭证, 可以理解为一个简易的pojo, 只要实�
 1 . 在登录表单增加product字段,具体操作详见下个Section
 2 . 在 /WEB-INF/login-webflow.xml 中,修改credentials类型为自定义的Credentials
 ```
-<var name="credentials" class="com.nbrc.sso.cas.principal.NbrcCredentials"/> 
+<var name="credentials" class="com.nbrc.sso.cas.principal.NbrcCredentials"/>
 ```
 3 . 然后继续在 login-webflow.xml里找到 viewLoginForm ,进行数据绑定
 ```
@@ -50,7 +50,7 @@ Credentials是一个用户凭证, 可以理解为一个简易的pojo, 只要实�
 <property name="authenticationHandlers">
             <list>
                 <bean
-                    class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler" 
+                    class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler"
                     p:httpClient-ref="httpClient" p:requireSecure="false" />
 
                 <bean
@@ -104,9 +104,9 @@ default/ui/casLoginView.jsp 就是默认的登录界面，可以给form表单增
         <c:if
             test="${fn:length(assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.attributes) > 0}">
             <cas:attributes>
-                  <c:forEach var="attr" items="${assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.attributes}"> 
-                    <cas:${fn:escapeXml(attr.key)}>${fn:escapeXml(attr.value)}</cas:${fn:escapeXml(attr.key)}> 
-                </c:forEach> 
+                  <c:forEach var="attr" items="${assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.attributes}">
+                    <cas:${fn:escapeXml(attr.key)}>${fn:escapeXml(attr.value)}</cas:${fn:escapeXml(attr.key)}>
+                </c:forEach>
             </cas:attributes>
         </c:if>
         <c:if test="${not empty pgtIou}">
@@ -114,8 +114,8 @@ default/ui/casLoginView.jsp 就是默认的登录界面，可以给form表单增
         </c:if>
         <c:if test="${fn:length(assertion.chainedAuthentications) > 1}">
             <cas:proxies>
-                <c:forEach var="proxy" items="${assertion.chainedAuthentications}" 
-                    varStatus="loopStatus" begin="0" 
+                <c:forEach var="proxy" items="${assertion.chainedAuthentications}"
+                    varStatus="loopStatus" begin="0"
                     end="${fn:length(assertion.chainedAuthentications)-2}" step="1">
                     <cas:proxy>${fn:escapeXml(proxy.principal.id)}</cas:proxy>
                 </c:forEach>
@@ -141,5 +141,4 @@ AttributePrincipal.getAttributes() 就是Resolver中返回的SinmplePrincipal的
 2. 修改 cas-servlet.xml , 在 logoutController 的bean中增加属性 p:followServiceRedirects="true"
 3. 假如应用已经有一个退出controller，此contoller用来清空session,那么链接 http://cas.example.org/logout?service=http://localhost:8080/logout 便可以正常退出
 
-
-
+THE END
