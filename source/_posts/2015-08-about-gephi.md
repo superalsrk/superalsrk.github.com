@@ -1,11 +1,13 @@
 ---
-title: Gephi简介
+title: 使用Gephi生成网络图
 date: 2015-08-26 11:38:00
 tags: ['算法','工具','数据开发']
 description: Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 擅长处理图数据
 keywords:
 toc: true
 ---
+
+## 前言
 Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 其主要用于各种网络和复杂系统, 特别是在处理网络关系数据这方面很有优势,下面是两个不错的例子
 
 + [编程语言关系图](http://exploringdata.github.io/vis/programmers-search-relations/)
@@ -16,12 +18,13 @@ Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 其主�
 
 ![](http://7jptw8.com1.z0.glb.clouddn.com/gephi/weibo.png)
 
-那么,我们拿到图数据后, 应该如何画出这个图表呢？
-## 图表绘制
+那么,我们拿到原始数据后, 怎么才能画出这样的图表呢？
 
-通过分析上面两个例子的代码可知,前端插件用的都是 [sigma.js](http://sigmajs.org/) ,但是在展示网络数据的时候插件并不会自动的对节点和边进行布局,需要通过后台传给前台数据文件,常用的有两种格式 **json** 和 **gexf**
+## 布局文件生成
 
-虽然gephi是一个gui程序,但是它提供了一套叫 **gephi-toolkit** 的东西,可以方便的编程化方式处理数据, 首先加入gephi仓库并引入依赖
+通过上面两个例子可以分析出,这类图表可以通过 [sigma.js](http://sigmajs.org/) 画出来,但是插件本身并不提供预处理数据&&布局功能,所以在绘制图表的时候需要有一份数据文件来详细的表明`节点名称,颜色,大小,横坐标, 纵坐标,边的起始节点`,这类数据一般用 gexf(xml格式) 或者 json来表示. 
+
+生成gexf需要用到布局算法, 常见的有 [Force-directed_graph_drawing](https://en.wikipedia.org/wiki/Force-directed_graph_drawing) 力导向算法, `算法的核心思想是节点之间产生斥力,边给两个节点提供拉力,通过多次迭代最后维持一个稳定状态`，手动实现布局算法还是有一些复杂度的,好在gephi-tookit组件提供了API来处理数据, 首先在maven项目中加入gephi的仓库和依赖
 ```xml
 <repositories>
      <repository>
@@ -43,22 +46,8 @@ Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 其主�
     </dependency>
 </dependencies>
 ```
-添加依赖完成之后,可以参考这个 [slide](http://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit) 熟悉一下API
+添加依赖完成之后,参考这个 [slide](http://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit), 根据需求构造一个有向图,并调用布局算法, 最后导出成gexf和pdf文件
 
-
-## 布局算法
-
-布局算法是图算法的一大部分, 常用的有 [Force-directed_graph_drawing
-](https://en.wikipedia.org/wiki/Force-directed_graph_drawing) 力导向算法, 其基本思想是:
-
-+ 对网络状态进行初始化
-+ 计算每次迭代局部区域内，两两节点间的斥力所产生的单位位移（一般为正值）
-+ 计算每次迭代每条边的引力对两端节点所产生的单位位移（一般为负值）
-+ 上面两步中的斥力和引力系数直接影响到最终态的理想效果，它与节点间的距离、节点在系统所在区域的平均单位区域均有关，需要开发人员在实践中不断调整
-+ 累加所有节点的单位位移，结合单次最大移动距离确定每个节点新的位置
-+ 迭代n次,达到最优效果
-
-gephi-tookit中也自带了几种布局算法, 而且易于使用, 如果你的数据源是数据库, 可以参考 [这个例子](https://github.com/gephi/gephi/wiki/How-to-import-from-RDBMS) ,当然也可以纯手工构建一个图, 示例代码如下所示:
 
 ```java
 ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
@@ -120,7 +109,11 @@ try {
     ex.printStackTrace();
 }
 ```
-其中导出的 **gexf** 数据文件可以用于 sigmajs的展示
+
+## 图表绘制
+
+在得到数据文件后可以参考这个 **[Online Demo](http://fun.stackbox.org/201509/sigmajs/index.html)** 来绘制图表。
+
 
 ## 参考资料
 1. http://gephi.github.io/
