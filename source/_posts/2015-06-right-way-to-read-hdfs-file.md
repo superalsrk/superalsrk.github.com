@@ -1,7 +1,7 @@
 ---
 title: 读取文件的正确方式
 date: 2015-06-19 01:48:34
-tags: ['基础','Java']
+tags: ['Java']
 description: "IO好复杂系列"
 keywords: "HDFS,BufferStream,hdfs文件截断"
 toc: true

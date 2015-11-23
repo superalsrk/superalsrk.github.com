@@ -61,6 +61,7 @@ per_page: 8
 pagination_dir: page
 
 # Disqus
+#disqus_shortname: srkbox
 disqus_shortname: srkbox
 
 # Extensions
@@ -71,7 +72,7 @@ theme: landscape-cn
 feed:
   type: atom
   path: atom.xml
-  limit: 20
+  limit: 40
 
 sitemap:
     path: sitemap.xml
