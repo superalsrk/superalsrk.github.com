@@ -3,6 +3,7 @@
 title: 如何编写一个JS库
 date: 2014-12-17 20:38:24
 tags: ['前端']
+categories: ['前端','实践']
 description: "实现JavaScript Library常用的几种方式"
 keywords: "js模式,javascript模版,javascript设计模式"
 toc: true

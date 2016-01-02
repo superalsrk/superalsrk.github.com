@@ -4,6 +4,7 @@ title: '使用jsonp解决跨域问题'
 date: 2014-06-21 17:16:00
 tags: ['前端']
 description: "关于jsonp的原理与使用"
+categories: ['前端','原理']
 keywords: "jsonp,解决跨域问题,jsonp原理，CORS"
 ---
 

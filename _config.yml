@@ -80,3 +80,8 @@ sitemap:
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type:
+
+archive_generator:
+  per_page: 200
+  yearly: true
+

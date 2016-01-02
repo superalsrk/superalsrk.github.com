@@ -3,6 +3,7 @@
 title: Build Your Own Cas Service - Pro
 date: 2015-01-06 13:21:17
 tags: ['工具','Auth']
+categories: ['软件工程','Auth']
 description: "对JASIG-CAS进行页面和业务的扩展具体步骤"
 keywords: "cas自定义登陆,cas自定义Credentials,cas修改页面,cas单点退出,cas获取多余属性,cas获取更多用户信息"
 ---

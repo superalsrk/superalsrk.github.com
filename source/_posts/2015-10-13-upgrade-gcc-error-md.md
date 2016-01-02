@@ -2,6 +2,7 @@
 title: 由升级GCC引发的惨案
 date: 2015-10-13 19:26:20
 tags: ['各种坑']
+categories: ['运维','Linux']
 description: 解决老旧的CentOS升级GCC引发的Assembler Error问题
 keywords:
 ---

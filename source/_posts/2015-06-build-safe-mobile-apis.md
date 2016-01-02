@@ -2,6 +2,7 @@
 title: 构建安全的Mobile API
 date: 2015-06-27 23:30:46
 tags: ['软件工程','Java','Spring']
+categories: ['软件工程','实践']
 description: '讲解如何对REST接口进行访问控制'
 keywords:
 toc: true
