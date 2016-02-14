@@ -7,17 +7,6 @@ dstag: about
 自虐型INFP码农, 目前处于并将长期处于人生迷茫期
 
 
-## Github
-
-<script
-  data-name="superalsrk"
-  data-modules="base,stats,repos,eventsStatis"
-  data-reposNum="3"
-  data-theme="base"
-  src="http://octocard.in/o.js">
-</script>
-
-
 ## 时之沙
 
 + [Github](https://github.com/superalsrk)
