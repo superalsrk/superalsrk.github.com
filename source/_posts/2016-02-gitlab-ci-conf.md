@@ -18,11 +18,8 @@ toc: true
 + 普通的服务器上的Runner (优点: 没找到 , 缺点: 在RHEL系列的机器里特别难配置,至今未成功过)
 + 基于Docker的Runner (优点: 这可是Docker啊就问你怕不怕 , 缺点:至今没研究明白怎么用maven本地仓库,Build时候处理依赖极慢)
 
-注意, 在你的项目配置页面会有如下信息
 
-![](http://7jptw8.com1.z0.glb.clouddn.com/%40%2Fblog%2Fci-conf.png)
-
-Runner安装成功之后, 就可以根据上图中的lo URL和Token 跟CI进行绑定, 之后这两端之间就会各种消息交互, 然后自动的Build&返回结果
+Runner安装成功之后, 就可以根据配置中的URL和Token 跟CI进行绑定, 之后这两端之间就会各种消息交互, 然后自动的Build&返回结果
 
 
 # 使用
