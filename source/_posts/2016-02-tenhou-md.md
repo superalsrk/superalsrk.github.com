@@ -1,7 +1,7 @@
 ---
 title: 日麻相关
 date: 2016-02-19 23:05:59
-tags:
+tags: ['生活']
 description: 关于日麻的规则, 番型
 keywords:
 ---

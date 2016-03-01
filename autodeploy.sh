@@ -12,5 +12,5 @@ git init .
 git remote add origin git@github.com:superalsrk/superalsrk.github.com.git
 git add .
 git commit -m ':green_book:'
-git push origin master -f
+git push -f origin master 
 #cp atom.xml feed/index.xml
