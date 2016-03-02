@@ -4,7 +4,7 @@ date: 2015-07-15 10:06:42
 tags: ['Hadoop','数据开发','各种坑']
 categories: ['数据开发','Hadoop']
 description: 'HDFS中PathFilter无法生效的问题'
-keywords:
+keywords: ['PathFilter无法生效', 'Hadoop']
 ---
 
 最近再写一个MapReduce的时候出现了一个诡异的问题, PathFilter无法生效, 具体描述如下:

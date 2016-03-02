@@ -4,7 +4,7 @@ date: 2015-12-04 14:50:41
 tags: ['前端']
 categories: ['工具', 'Hexo']
 description: 用来在Hexo中插入PDF
-keywords:
+keywords: ['hexo-pdf']
 ---
 
 项目地址为: https://github.com/superalsrk/hexo-pdf , 已经PR到[官网](https://hexo.io/plugins/), 欢迎吐槽, 做这个插件的原因是

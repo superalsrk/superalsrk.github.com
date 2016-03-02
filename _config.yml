@@ -5,10 +5,11 @@
 # Site
 title: 叠搭宝箱
 subtitle:
-description: 关于技术的一些日志
+description: INFP码农的自留地
 author: SRK.Lyu
 language:
 timezone:
+keywords: 叠搭宝箱, SpringBoot, 微服务, 分布式, 前端
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'

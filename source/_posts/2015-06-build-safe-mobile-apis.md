@@ -4,9 +4,11 @@ date: 2015-06-27 23:30:46
 tags: ['软件工程','Java','Spring']
 categories: ['软件工程','实践']
 description: '讲解如何对REST接口进行访问控制'
-keywords:
+keywords: ['安全API']
 toc: true
 ---
+
+> Update at 2016.03.02: 此文描述的的工程策略已经有些复杂了, 目前比较流行的方式是使用SpringBoot+oauth2构建
 
 最近和小伙伴鼓捣一个APP, 没想到一开始在登陆注册这块就卡住了, 卡住的原因在于 __如何对接口进行访问控制__ , 大家都知道, 在传统的web开发中由于有session/cookie的存在,请求可以保持状态, 但一般来讲,APP用到的API都是被设计成无状态的, 那应该如何解决问题呢?
 

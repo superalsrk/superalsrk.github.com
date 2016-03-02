@@ -4,5 +4,5 @@ date: 2015-09-27 20:03:11
 tags: ['分布式','中间件','Python']
 categories: ['软件工程','中间件']
 description:
-keywords:
+keywords: ['Celery']
 ---

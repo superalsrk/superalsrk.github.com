@@ -4,7 +4,7 @@ date: 2015-08-26 11:38:00
 tags: ['算法','工具','数据开发']
 categories: ['数据开发','可视化']
 description: Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 擅长处理图数据
-keywords:
+keywords: ['传播路径图', '图软件', 'Gephi']
 toc: true
 ---
 

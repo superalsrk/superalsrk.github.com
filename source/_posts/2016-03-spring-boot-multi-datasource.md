@@ -22,7 +22,6 @@ toc: true
 
 ```java
 public abstract class AbstractRoutingDataSource extends AbstractDataSource implements InitializingBean {
-
     public Connection getConnection() throws SQLException {  
         return determineTargetDataSource().getConnection();  
     } 
@@ -71,7 +70,6 @@ protected DataSource determineTargetDataSource() {
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface MzDataSource {
-
     String name() default MzDataSource.master;
     public static String master = "masterDataSource";
     public static String slave = "slaveDataSource";
@@ -117,27 +115,20 @@ public class DataSourceRouteHolder {
 @Aspect
 public class DataSourceAspect {
     @Pointcut("execution(* cn.stackbox.service..*(..))")
-    public void aspect() {
-    }
-
+    public void aspect() {}
     @Before("aspect()")
     public void doBefore(JoinPoint point) throws Throwable {
-
         final MethodSignature methodSignature = (MethodSignature) point.getSignature();
         Method method = methodSignature.getMethod();
         MzDataSource mzDataSource = method.getAnnotation(MzDataSource.class);
-
         if(method.getDeclaringClass().isInterface()) {
             method = point.getTarget().getClass().getMethod(method.getName(), method.getParameterTypes());
         }
-
         mzDataSource = method.getAnnotation(MzDataSource.class);
-
         if(null != mzDataSource) {
             DataSourceRouteHolder.setDataSourceKey(mzDataSource.name());
         }
     }
-
     @After("aspect()")
     public void doAfter() {
         DataSourceRouteHolder.clearDataSourceKey();
@@ -152,27 +143,22 @@ public class DataSourceAspect {
 @Primary
 public DataSource dataSource() {
     DynamicDataSourceResolver resolver = new DynamicDataSourceResolver();
-
     Map<Object, Object> dataSources = Maps.newHashMap();
     dataSources.put("masterDataSource", masterDataSource());
     dataSources.put("slaveDataSource", slaveDataSource());
     resolver.setTargetDataSources(dataSources);
     return resolver;
 }
-
-
 @Bean
 @ConfigurationProperties(prefix="spring.datasource.master")
 public DataSource masterDataSource() {
     return new org.apache.tomcat.jdbc.pool.DataSource();
 }
-
 @Bean
 @ConfigurationProperties(prefix="spring.datasource.slave")
 public DataSource slaveDataSource() {
     return new org.apache.tomcat.jdbc.pool.DataSource();
 }
-
 ```
 
 # 注意
