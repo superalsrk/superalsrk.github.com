@@ -63,7 +63,7 @@ pagination_dir: page
 
 # Disqus
 #disqus_shortname: srkbox
-disqus_shortname: srkbox
+duoshuo_shortname: stackbox
 
 # Extensions
 ## Plugins: http://hexo.io/plugins/
