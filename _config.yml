@@ -73,7 +73,7 @@ theme: landscape-cn
 feed:
   type: atom
   path: atom.xml
-  limit: 40
+  limit: 100
 
 sitemap:
     path: sitemap.xml

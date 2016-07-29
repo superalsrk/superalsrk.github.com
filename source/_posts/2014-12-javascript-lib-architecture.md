@@ -8,6 +8,10 @@ description: "实现JavaScript Library常用的几种方式"
 keywords: "js模式,javascript模版,javascript设计模式"
 toc: true
 ---
+
+ ***2016.07.29更新: 什么cmd啊amd啊commonjs啊是不是好烦, 欢迎使用ES6的模块加载机制, 所以本文看看就好, 不要太在意***
+
+
 编写js/jQuery插件有一些约定俗成的套路，根据这些套路依葫芦画瓢，代码的结构上就不会出现太大的问题了，特别推荐这个叫 [javascript-patterns](https://github.com/shichuan/javascript-patterns/) 的项目,一些demo让我收获良多。
 
 ## 基本结构 ##
