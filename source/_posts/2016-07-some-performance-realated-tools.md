@@ -3,7 +3,7 @@ title: 记录一次奇葩的性能调优经历
 date: 2016-07-29 22:23:00
 tags: ['性能优化']
 description: 几个常用的性能分析工具
-keywords:
+keywords: iostat使用, iotop使用, 机器负载查看
 toc: true
 ---
 

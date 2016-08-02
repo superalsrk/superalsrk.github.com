@@ -3,7 +3,7 @@ title: 微信公众号爬虫
 date: 2016-07-21 14:41:57
 tags: ['爬虫']
 description: 目前运行效果良好的一个微信爬虫方案
-keywords:
+keywords: 微信爬虫, 微信公众号爬虫
 toc: true
 ---
 
@@ -51,7 +51,8 @@ toc: true
 
 ### Update
 
-生成key的方式是写按键精灵的脚本去不断地生成文章列表URL然后不停的点击, 用squid做代理来获取带Key的URL(squid需要配置一下ssl-bump透明代理)
++ 生成key的方式是写按键精灵的脚本去不断地生成文章列表URL然后不停的点击, 用squid做代理来获取带Key的URL(squid需要配置一下ssl-bump透明代理)
++ 经@tinkerz 提醒, 按键精灵可以用Java Robot类替换, 这样代码更好写一些(毕竟VBA语法是在是太丑了)
 
 Over
 

@@ -58,11 +58,33 @@ yum install devtoolset-2-gcc devtoolset-2-gcc-c++
 ```bash 
 cd /etc/yum.repos.d
 wget http://people.centos.org/tru/devtools-2/devtools-2.repo 
-yum install devtools-2
 yum install devtoolset-2
 
 #临时改变gcc版本
 scl enable devtoolset-2 bash
 ```
+
+
+## Update (2016.08.02)
+
+今天在一台纯CentOS6.4的Server上更新g++ 报错, 大致原因是有一堆GUI的依赖没有安装, 但是我只想更新编译器不想更新其他的,
+
+查了一下文档发现devtools包含的模块主要有一下几个
+
+| Package Name | Description | Installed Components |
+|--------------|-------------|----------------------|
+|devtoolset-2-ide | Integrated Development Environment | Eclipse |
+|devtoolset-2-perftools | Performance monitoring tools | SystemTap, Valgrind, OProfile, Dyninst|
+|devtoolset-2-toolchain | Development and debugging tools | GCC,GDB,binutils, elfutils, dwz, memstomp, strace|
+|devtoolset-2-vc | Reveision control systems | Git|
+
+所以。。只需要安装 **devtoolset-2-toolchain** 即可
+
+```
+$ cd /etc/yum.repos.d
+$ wget http://people.centos.org/tru/devtools-2/devtools-2.repo 
+$ sudo yum install devtoolset-2-toolchain
+$ scl enable devtoolset-2 bash
+``` 
 
 

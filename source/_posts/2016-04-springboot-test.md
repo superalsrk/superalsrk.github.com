@@ -3,7 +3,7 @@ title: SpringBoot-单元测试
 date: 2016-04-25 16:24:45
 tags: ['SpringBoot']
 description: 在基于SpringBoot的项目中使用单元测试
-keywords: ['SpringBoot']
+keywords: ['SpringBoot单元测试']
 ---
 
 对Controller层进行测试的时候, 如果是测试 REST接口, 使用 [rest-assured](https://github.com/jayway/rest-assured) 是一个十分不错的选择
