@@ -3,7 +3,7 @@ title: 微信公众号爬虫
 date: 2016-07-21 14:41:57
 tags: ['爬虫']
 description: 目前运行效果良好的一个微信爬虫方案
-keywords: 微信爬虫, 微信公众号爬虫
+keywords: [微信爬虫, 微信公众号爬虫]
 toc: true
 ---
 

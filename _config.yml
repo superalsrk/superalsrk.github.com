@@ -80,7 +80,9 @@ sitemap:
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repository: git@github.com:superalsrk/superalsrk.github.com.git
+  branch: master
 
 archive_generator:
   per_page: 200

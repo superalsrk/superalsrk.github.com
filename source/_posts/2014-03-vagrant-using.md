@@ -229,3 +229,11 @@ $ VBoxManage setextradata <vm-name> VBoxInternal/Devices/VMMDev/0/Config/GetHost
   虚拟机初始化启动时， host的当前工作目录就会映射到 guest的 `/vagrant` 文件夹下
 
   也可以通过VagrantFile `config.vm.synced_folder "wwwroot/", "/var/www"` 完成映射配置
+  
+
+
+## 常见问题 ##
+
++ 找不到rsync命令:  参考 [这个](http://stackoverflow.com/questions/34176041/vagrant-with-virtualbox-on-windows10-rsync-could-not-be-found-on-your-path), 配置文件中加入 `config.vm.synced_folder ".", "/vagrant", type: "virtualbox"` 即可
++ `vagrant up` 的时候私钥错误, 可以暂时删除 `.vagrant/**/private_key.`, 用用户名密码登陆
++ 推荐fedora cloud镜像

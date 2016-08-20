@@ -3,7 +3,7 @@ title: SpringBoot-日志相关
 date: 2016-03-02 19:49:26
 tags: ['SpringBoot']
 description: SpringBoot中关于Logback使用的一些tips
-keywords: ['SpringBoot', 'SLF4J']
+keywords: ['SpringBoot', 'SLF4J', 'springprofile logback']
 toc: true
 ---
 
