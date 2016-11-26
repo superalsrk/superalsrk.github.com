@@ -24,7 +24,7 @@ SpringBoot提供了一套基本的日志系统, 默认是基于 Logback+SLF4J, �
 
 其中 `base.xml` 的代码如下
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
@@ -46,7 +46,7 @@ SpringBoot提供了一套基本的日志系统, 默认是基于 Logback+SLF4J, �
 
 可以使用spring来扩展profile的支持, 必须以 **logback-spring.xml** 命名
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
@@ -68,7 +68,7 @@ SpringBoot提供了一套基本的日志系统, 默认是基于 Logback+SLF4J, �
 
 可以用如下代码进行日志分割
 
-```
+```xml
 <appender name="MZRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <File>/home/data/superalsrk/SLF4J/stackbox-eureka/eureka.log</File>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -90,7 +90,7 @@ SpringBoot提供了一套基本的日志系统, 默认是基于 Logback+SLF4J, �
 
 所以我的脚本为
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
