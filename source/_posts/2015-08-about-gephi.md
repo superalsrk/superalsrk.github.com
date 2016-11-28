@@ -121,4 +121,9 @@ try {
 2. http://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit
 3. https://github.com/gephi/gephi/wiki/How-to-code-with-the-Toolkit
 
+## Update:
+
+1. 关于gexf文件的生成, 可以用这个python库: https://github.com/paulgirard/pygexf
+2. 纯前端的话, sigma.js 提供了插件 https://github.com/jacomyal/sigma.js/tree/master/plugins/sigma.layout.forceAtlas2 来实现力导向算法
+
 THE END
