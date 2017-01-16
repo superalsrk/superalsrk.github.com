@@ -90,5 +90,5 @@ archive_generator:
 
 search:
   path: search.xml
-  field: all
+  field: post
 
