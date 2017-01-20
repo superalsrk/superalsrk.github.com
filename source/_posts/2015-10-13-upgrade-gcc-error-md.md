@@ -84,7 +84,8 @@ scl enable devtoolset-2 bash
 $ cd /etc/yum.repos.d
 $ wget http://people.centos.org/tru/devtools-2/devtools-2.repo 
 $ sudo yum install devtoolset-2-toolchain
-$ scl enable devtoolset-2 bash
+$ scl enable devtoolset-2 bash 
+$ source /opt/rh/devtoolset-2/enable
 ``` 
 
 
