@@ -19,5 +19,4 @@ INFP码农, 目前处于并将长期处于人生迷茫期
 + [Github](https://github.com/superalsrk)
 + [Book](http://book.douban.com/people/38686769/)
 + [Game](http://www.douban.com/people/38686769/games?action=collect)
-+ [Notebook](http://nbviewer.jupyter.org/github/superalsrk/notebook/blob/master/index.ipynb)
 
