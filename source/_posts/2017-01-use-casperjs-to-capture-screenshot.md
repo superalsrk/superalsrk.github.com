@@ -3,7 +3,7 @@ title: 使用CasperJS生成长图片
 date: 2017-01-27 18:33:00
 tags: ['工具']
 description: 用CasperJS对网页进行截图, 并处理CentOS下的字体渲染问题
-keywords: ['工具','生成长图片','PhantomJS网页截图']
+keywords: ['工具','如何生成长图片','PhantomJS网页截图']
 ---
 
 最近有一个类似 **生成微博长图片** 类似的需求, 实现思路就是用类似PhantomJS的这种无GUI浏览器访问网页并截图
