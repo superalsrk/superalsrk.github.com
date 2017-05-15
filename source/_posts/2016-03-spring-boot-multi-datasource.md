@@ -20,7 +20,7 @@ toc: true
 
 **AbstractRoutingDataSource** 的源码如下, 这个类实现了 **DataSource** 接口无误
 
-```java
+```
 public abstract class AbstractRoutingDataSource extends AbstractDataSource implements InitializingBean {
     public Connection getConnection() throws SQLException {  
         return determineTargetDataSource().getConnection();  
@@ -33,7 +33,7 @@ public abstract class AbstractRoutingDataSource extends AbstractDataSource imple
 
 然后具体是怎么获取 Connection的呢? **determineTargetDataSource** 具体实现是这样的
 
-```java
+```
 protected DataSource determineTargetDataSource() {  
     Assert.notNull(this.resolvedDataSources, "DataSource router not initialized");  
     Object lookupKey = determineCurrentLookupKey();  
@@ -65,7 +65,7 @@ protected DataSource determineTargetDataSource() {
 
 首先, 写一个自定义的注解, 用在Service中的各个Method上
 
-```java
+```
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -78,7 +78,7 @@ public @interface MzDataSource {
 
 然后再写一个类用来存放LocalThread变量
 
-```java
+```
 public class DynamicDataSourceResolver extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
@@ -93,7 +93,7 @@ public class DynamicDataSourceResolver extends AbstractRoutingDataSource {
 
 再写一个普通风格的AbstractRoutingDataSource实现, 策略就是直接从LocalThread里直接取Key
 
-```java
+```
 public class DataSourceRouteHolder {
     private static final ThreadLocal<String> dataSources = new ThreadLocal<>();
         public static void setDataSourceKey(String customType) {
@@ -110,7 +110,7 @@ public class DataSourceRouteHolder {
 
 使用注解AOP的方式来读取Service方法上的自定义注解, 然后塞进ThreadLocal里, 下面的实现既支持Service接口里的注解, 也支持Service实现中注解, 实现优先级大于接口
 
-```java
+```
 @Component
 @Aspect
 public class DataSourceAspect {
@@ -138,7 +138,7 @@ public class DataSourceAspect {
 
 最后配置一下主从数据源, 需要注意的是需要在DynamicDataSourceResolver上加一个 `@Primary` 的注解, 不然会抛出一个类qualifier多个实例的异常
 
-```java
+```
 @Bean
 @Primary
 public DataSource dataSource() {

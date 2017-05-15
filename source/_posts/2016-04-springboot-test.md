@@ -16,7 +16,7 @@ keywords: ['SpringBoot单元测试']
 
 ### 示例代码
 
-```java
+```
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MyApplication.class)
 @WebAppConfiguration
@@ -31,7 +31,7 @@ public abstract class AbstractTestCase {
 }
 ```
 
-```java
+```
 public abstract class AbstractRouteTestCase extends AbstractTestCase {
     /**
      * 初始化MVC TEST
@@ -45,7 +45,7 @@ public abstract class AbstractRouteTestCase extends AbstractTestCase {
 ```
 
 
-```java
+```
 public class RouterWxapiStatusTest extends AbstractRouteTestCase {
     @Before
     public void setUp() {
