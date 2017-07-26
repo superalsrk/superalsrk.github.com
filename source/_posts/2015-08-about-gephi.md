@@ -113,7 +113,7 @@ try {
 
 ## 图表绘制
 
-在得到数据文件后可以参考这个 **[Online Demo](http://fun.stackbox.org/201509/sigmajs/index.html)** 来绘制图表。
+在得到数据文件后可以参考这个 **[Online Demo](https://nagland.github.io/201509/sigmajs/index.html)** 来绘制图表。
 
 
 ## 参考资料
