@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: SRK.Lyu's Blog
+title: 叠搭宝箱
 subtitle:
 description: 叠搭宝箱的个人博客
 author: 叠搭宝箱
@@ -69,7 +69,8 @@ duoshuo_shortname: stackbox
 ## Plugins: http://hexo.io/plugins/
 ## Themes: http://hexo.io/themes/
 #theme: landscape-cn
-theme: material
+#theme: material
+theme: maupassant
 feed:
   type: atom
   path: atom.xml

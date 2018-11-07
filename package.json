@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "hexo": {
-    "version": "3.2.2"
+    "version": "3.8.0"
   },
   "dependencies": {
     "hexo": "^3.2.2",
@@ -18,6 +18,8 @@
     "hexo-pdf": "^1.1.0",
     "hexo-renderer-ejs": "^0.1.0",
     "hexo-renderer-marked": "^0.2.4",
+    "hexo-renderer-pug": "0.0.5",
+    "hexo-renderer-sass": "^0.3.2",
     "hexo-renderer-stylus": "^0.2.0",
     "hexo-server": "^0.1.2",
     "koa-views": "^5.0.2",
