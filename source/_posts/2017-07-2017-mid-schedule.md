@@ -1,9 +1,8 @@
 ---
 title: 2017年中总结
 date: 2017-07-25 17:57:04
-tags: ['生活记录']
 description: 2017年中总结以及下半年规划
-categories: ['生活','记录']
+categories: ['生活记录']
 ---
 
 

@@ -1,7 +1,7 @@
 ---
 title: 深入理解Supervisor事件机制
 date: 2017-02-06 18:36:37
-tags:
+tags: ['工具']:
 description: 事件机制是在supervisor v3.0开始引入的一个高级特性, 常用情景是supervisor的报警系统
 keywords:
 ---

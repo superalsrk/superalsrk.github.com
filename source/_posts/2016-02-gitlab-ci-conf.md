@@ -3,7 +3,6 @@ title: 使用Gitlab CI进行持续集成
 date: 2015-12-31 15:19:40
 tags: ['工具']
 description: 本地Runner对小团队来说还是挺好用的                              	
-categories: ['工具']
 keywords: ['Gitlab-ci', '持续集成']
 toc: true
 ---

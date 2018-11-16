@@ -1,7 +1,7 @@
 ---
 title: 一个奇怪的wait4行为
 date: 2016-09-07 14:16:32
-tags: ['Linux','Python']
+tags: ['计算机基础']
 description: OSX/Linux 下 signal handler 和 wait4同时使用引起的奇怪问题
 keywords: ['Linux','Python']
 toc: true

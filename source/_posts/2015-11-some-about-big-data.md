@@ -1,8 +1,6 @@
 ---
 title: 【深夜概谈】大数据的一些胡思乱想
 date: 2015-11-30 00:08:17
-tags: ['深夜概谈']
-categories: ['深夜概谈']
 description: 由一篇文章引起的胡思乱想
 keywords:
 ---

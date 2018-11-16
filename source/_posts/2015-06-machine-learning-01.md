@@ -5,7 +5,7 @@ date: 2015-06-05 13:41:41
 mathjax: true
 toc: true
 tags: ["机器学习"]
-categories: ['机器学习','原理']
+categories: ['机器学习']
 keywords: ['线性回归', '机器学习']
 description: "机器学习之线性回归"
 

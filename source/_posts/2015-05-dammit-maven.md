@@ -2,8 +2,7 @@
 
 title: maven大坑
 date: 2015-05-11 00:53:31
-tags: ['软件工程','各种坑']
-categories: ['软件工程','坑']
+tags: []
 description: "Damn it,maven！"
 keywords: "MAVEN注意点"
 toc: true

@@ -1,8 +1,7 @@
 ---
 title: PathFilter无法生效
 date: 2015-07-15 10:06:42
-tags: ['Hadoop','数据开发','各种坑']
-categories: ['数据开发','Hadoop']
+tags: ['数据开发']
 description: 'HDFS中PathFilter无法生效的问题'
 keywords: ['PathFilter无法生效', 'Hadoop']
 ---
