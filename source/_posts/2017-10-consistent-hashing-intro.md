@@ -28,10 +28,10 @@ keywords: ['一致性hash','consistent hashing']
 一致性hash的算法实现如下
 
 1. 根据(ip,port,mac等)求出节点的hash值, 分布在0-2^32的圆环上
-![](http://note.youdao.com/yws/public/resource/ae02541e27c2038ef401398a6c3b8a1e/xmlnote/078CD6998CD243E9AD3D94FA30CC17A1/2313)
+![](/image/2017-10/consistent-hash-1.png)
 2. 如果有一个写入缓存的请求，其中Key值为K，计算器hash值Hash(K)， Hash(K) 对应于图 – 1环中的某一个点，如果该点对应没有映射到具体的某一个机器节点，那么顺时针查找，直到第一次找到有映射机器的节点，该节点就是确定的目标节点，如果超过了2^32仍然找不到节点，则命中第一个机器节点。比如 Hash(K) 的值介于A~B之间，那么命中的机器节点应该是B节点
 3. 如果增加一个节点, 会初始化该节点到现有的环上, 比如加入了节点F, 初始该节点后集群状态如下
-![](http://note.youdao.com/yws/public/resource/ae02541e27c2038ef401398a6c3b8a1e/xmlnote/65C5DDA86C7C466E9B19B4238FA95D84/2315)
+![](/image/2017-10/consistent-hash-1.png)
 那么只有C-F之间的区域的数据会出现节点不命中的情况, 将该区域的数据rebalance即可
 4. 如果将F节点去掉, 那么还是只有C-F之间的区域数据会收到影响, 按照算法只要将F节点数据挪到D节点上即可
 
@@ -98,8 +98,8 @@ public class Sharded<R, S extends ShardInfo<R>> {
 
 ## 参考
 
-1. http://www.cnblogs.com/lpfuture/p/5796398.html
-2. https://github.com/digoal/blog/blob/master/201607/20160723_03.md
-3. https://yikun.github.io/2016/06/09/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E7%9A%84%E7%90%86%E8%A7%A3%E4%B8%8E%E5%AE%9E%E8%B7%B5/
-4. http://m635674608.iteye.com/blog/2297632
-5. https://publicobject.com/2016/02/08/linkedhashmap-is-always-better-than-hashmap/
+1. [一致性哈希算法原理](http://www.cnblogs.com/lpfuture/p/5796398.html)
+2. [一致性哈希在分布式数据库中的应用探索](https://github.com/digoal/blog/blob/master/201607/20160723_03.md)
+3. [一致性哈希算法的理解与实践](https://yikun.github.io/2016/06/09/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E7%9A%84%E7%90%86%E8%A7%A3%E4%B8%8E%E5%AE%9E%E8%B7%B5/)
+4. [Jedis之ShardedJedis虚拟节点一致性哈希分析](http://m635674608.iteye.com/blog/2297632)
+5. [LinkedHashMap is always better than HashMap](https://publicobject.com/2016/02/08/linkedhashmap-is-always-better-than-hashmap/)

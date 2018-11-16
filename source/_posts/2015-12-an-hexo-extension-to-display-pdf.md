@@ -1,8 +1,6 @@
 ---
 title: 写了一个Hexo插件
 date: 2015-12-04 14:50:41
-tags: ['前端']
-categories: ['工具', 'Hexo']
 description: 用来在Hexo中插入PDF
 keywords: ['hexo-pdf']
 ---
