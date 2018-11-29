@@ -103,9 +103,6 @@ loss^{C}(\hat y, y) = \sum_{i=1}^{m} -ln\sigma(\hat y^{(i)}y^{(i)})
 下面简单的使用FM对 Kaggle criteo challenge 进行点击率预估
 
 
-
-
-
 ## 资料
 
 + [Factorization Machines论文](https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf)
