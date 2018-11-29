@@ -1,7 +1,7 @@
 ---
 title: SpringBoot-多数据源
 date: 2016-03-01 11:08:36
-tags: ['SpringBoot']
+tags: ['Java']
 description: 使用AbstractRoutingDataSource来配置多个数据源
 keywords: ['SpringBoot', '主从分离']
 toc: true

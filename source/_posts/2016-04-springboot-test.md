@@ -1,7 +1,7 @@
 ---
 title: SpringBoot-单元测试
 date: 2016-04-25 16:24:45
-tags: ['SpringBoot']
+tags: ['Java']
 description: 在基于SpringBoot的项目中使用单元测试
 keywords: ['SpringBoot单元测试']
 ---
