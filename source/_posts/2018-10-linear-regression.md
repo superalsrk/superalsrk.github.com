@@ -1,7 +1,7 @@
 ---
 
 title: 线性回归
-date: 2015-06-05 13:41:41
+date: 2018-10-05 13:41:41
 mathjax: true
 toc: true
 tags: ["机器学习"]
@@ -10,6 +10,10 @@ keywords: ['线性回归', '机器学习']
 description: 机器学习之线性回归
 
 ---
+
+## 引言
+
+这篇文章本来是2015年看Ng的视频做的笔记, 目前看有一些东西当时理解的太浅, 故修补之后重新发一下
 
 ## 基本概念 ##
 + 训练集 ''(Training set)''
@@ -29,7 +33,7 @@ $$ J(\theta\_0, \theta\_1) = \frac{1}{2m} \sum\_{i=1}^{m}(h\_\theta(x^{(i)}) - y
 
 ## 梯度下降算法 ##
 
-### 递归下降公式
+### 梯度下降公式
 
 以 \\( \theta_0 , \theta_1, J(\theta_0,\theta_1) \\) 画坐标系, 会得到类似下面的图像, 实际上对于线性的假设函数来说，整个图像会是一个弓形图，
 从任何地方会收敛到同一个最优点。梯度是一个方向导数, 在该方向上函数变化最大。
@@ -116,6 +120,9 @@ loss^{R} =  \frac{1}{2m}\sum_{i=1}^{m}(\hat{y}^{(i)} - y^{(i)})^2
 
 ## 代码实现
 
+https://github.com/Tara-X/algo/tree/master/linear
+
+
 ## 参考资料
 
 + [梯度下降之导数与梯度理解](https://blog.csdn.net/qq_37553011/article/details/79795092)
@@ -126,4 +133,4 @@ loss^{R} =  \frac{1}{2m}\sum_{i=1}^{m}(\hat{y}^{(i)} - y^{(i)})^2
 
 
 > 原创文章，转载请注明：转载自[叠搭宝箱](http://stackbox.cn)的博客
-> 本文链接地址: https://stackbox.cn/2015-06-linear-regression/
+> 本文链接地址: https://stackbox.cn/2018-10-linear-regression
