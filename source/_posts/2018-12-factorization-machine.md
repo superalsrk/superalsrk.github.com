@@ -86,6 +86,16 @@ loss^{C}(\hat y, y) = \sum_{i=1}^{m} -ln\sigma(\hat y^{(i)}y^{(i)})
 \end{align}
 
 
+### 梯度下降
+
+梯度下降公式为
+
+\begin{align}
+\theta = \theta - \alpha\frac{\partial{loss}}{\partial\theta}
+\end{align}
+
+其中 \\( \theta \\) 为带求解的参数, 为 \\( \omega_{0}\\), \\( \omega_{i} \\), \\( v_{i,f} \\)
+
 
 模型训练与预测的代码实现: https://github.com/Tara-X/algo/tree/master/fm
 
@@ -110,8 +120,9 @@ loss^{C}(\hat y, y) = \sum_{i=1}^{m} -ln\sigma(\hat y^{(i)}y^{(i)})
 + [从FM推演各深度CTR预估模型](https://zhuanlan.zhihu.com/p/39848122)
 + [FM（Factorization Machines）的理论与实践](https://zhuanlan.zhihu.com/p/50426292)
 + https://blog.csdn.net/g11d111/article/details/77430095
-https://blog.csdn.net/hiwallace/article/details/81333604
++ https://blog.csdn.net/hiwallace/article/details/81333604
 + https://blog.csdn.net/google19890102/article/details/45532745/
+
 
 
 > 原创文章，转载请注明：转载自[叠搭宝箱](http://stackbox.cn)的博客
