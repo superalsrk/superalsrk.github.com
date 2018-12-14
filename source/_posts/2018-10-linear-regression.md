@@ -16,15 +16,8 @@ description: 机器学习之线性回归
 这篇文章本来是2015年看Ng的视频做的笔记, 目前看有一些东西当时理解的太浅, 故修补之后重新发一下
 
 ## 基本概念 ##
-+ 训练集 ''(Training set)''
 
-$$ (x^{(0)},y^{(0)}),(x^{(1)},y^{(1)}),(x^{(2)},y^{(2)}).....(x^{(i)},y^{(i)}) $$
-
-+ 假设函数''(Hypothesis fuction)''
-
-$$ h_\theta(x)=\theta_0 + \theta_1x $$
-
-+ 代价函数''(Cost fuction)''
++ 代价函数/损失函数 **(Cost fuction)**
 
 :线性回归的目标是让 假设函数与训练集尽量的拟合，使得代价函数最小,前面的 \\( 1/2 \\)的作用是因为平方误差函数求导之后正好抵消,使得在梯度下降里面的偏导数项系数正好为1
 
@@ -39,44 +32,22 @@ $$ J(\theta\_0, \theta\_1) = \frac{1}{2m} \sum\_{i=1}^{m}(h\_\theta(x^{(i)}) - y
 从任何地方会收敛到同一个最优点。梯度是一个方向导数, 在该方向上函数变化最大。
 
 
-<img src="http://mirror.tarax.cn/liner-01.webp" style="width:500px">
 
-递归下降的公式为,其中 j 为 0 和 1,  \\( \alpha \\)叫做learning rate, 在几何上表现为每次下降的步长
+| 梯形图 | 梯度下降公式|
+|--------|-------------|
+|<img src="http://mirror.tarax.cn/liner-01.webp" style="width:300px"> |$$ \theta_j := \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta_0,\theta_1) $$ |
 
-$$ \theta_j := \theta_j - \alpha\frac{\partial}{\partial\theta_j}J(\theta_0,\theta_1) $$
 
 ### 理解梯度
 
++ 梯度即变化率最大的那个方向导数
++ 偏导数是一类特殊的方向导数
++ 求得某点的各方向偏导数, 可以构成一个向量, 沿着该向量变化最大, 即方向导数
 
-## 线性回归&梯度下降公式推导 ##
 
-推导过程的重点就是算代价函数 \\( J(\theta_0,\theta_1) \\)关于 \\( \theta_0 \\)和 \\( \theta_1 \\)的偏导数
 
-### \\( \theta_0 \\)的推导 ###
 
-\begin{align}
-\theta\_0 & := \theta\_0 - \alpha\frac{\partial}{\partial\theta\_0}J(\theta\_0,\theta\_1) \\\\
-& = \theta\_0 - \alpha\frac{\partial}{\partial\theta\_0} \frac{1}{2m} \sum\_{i=1}^{m}(h\_\theta(x^{(i)}) - y^{(i)})^2 \\\\
-& = \theta\_0 - \alpha\frac{\partial}{\partial\theta\_0} \frac{1}{2m} \sum\_{i=1}^{m}(\theta\_0 + \theta\_1x^{(i)} - y^{(i)})^2 \\\\
-& = \theta\_0 - \alpha\frac{\partial}{\partial\theta\_0} \frac{1}{2m} \sum\_{i=1}^{m}(\theta\_0^2 + 2\theta\_0(\theta\_1x^{(i)} - y^{(i)}) + (\theta\_1x^{(i)} - y^{(i)})^2) \\\\
-&= \theta\_0 - \alpha\frac{1}{2m} \sum\_{i=1}^{m}(2\theta\_0 + 2(\theta\_1x^{i} - y^{i})) \\\\
-& = \theta\_0 - \frac{\alpha}{m}  * \sum\_{i=1}^{m}(h\_\theta(x^{(i)}) - y^{(i)})
-\end{align}
 
-### \\( \theta_1 \\)的推导 ###
-\begin{align}
-\theta\_0 & := \theta\_1 - \alpha\frac{\partial}{\partial\theta\_1}J(\theta\_0,\theta\_1) \\\\
-& = \theta\_1 - \alpha\frac{\partial}{\partial\theta\_1} \frac{1}{2m} \sum\_{i=1}^{m}(h\_\theta(x^{(i)}) - y^{(i)})^2 \\\\
-& = \theta\_1 - \alpha\frac{\partial}{\partial\theta\_1} \frac{1}{2m} \sum\_{i=1}^{m}(\theta\_0 + \theta\_1x^{(i)} - y^{(i)})^2 \\\\
-& = \theta\_1 - \alpha\frac{\partial}{\partial\theta\_1} \frac{1}{2m} \sum\_{i=1}^{m}((\theta\_1 x^{i})^2 + 2\theta\_1x^{(i)}(\theta_0 - y^{(i)}) + (\theta_0 - y^{(i)})^2) \\\\
-& = \theta\_1 - (\alpha \frac{1}{2m}  \sum\_{i=1}^{m}(2\theta_1 (x^{(i)})^2 + 2x^{(i)}(\theta_0 - y^{(i))})  \\\\
-& = \theta\_1 - \frac{\alpha}{m}  * \sum\_{i=1}^{m}(h\_\theta(x^{(i)}) - y^{(i)})x^{(i)}
-\end{align}
-### 结论 ###
-
-收敛算法为：
-
-<img src="http://mirror.tarax.cn/liner-02.webp" style="width:500px">
 
 
 ## 多元线性回归
