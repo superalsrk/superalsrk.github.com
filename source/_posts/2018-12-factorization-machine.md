@@ -5,7 +5,6 @@ categories: ['机器学习']
 tags: [ "算法"]
 description: 因子分解机从入门到实践
 keywords: ['统计学', 'FM', "机器学习", "因子分解机"]
-toc: true
 mathjax: true
 ---
 
@@ -126,10 +125,8 @@ loss^{C}(\hat y, y) = \sum_{i=1}^{m} -ln\sigma(\hat y^{(i)}y^{(i)})
 + [libfm实现](https://www.csie.ntu.edu.tw/~b97053/paper/Factorization%20Machines%20with%20libFM.pdf)
 + [从FM推演各深度CTR预估模型](https://zhuanlan.zhihu.com/p/39848122)
 + [FM（Factorization Machines）的理论与实践](https://zhuanlan.zhihu.com/p/50426292)
-+ https://blog.csdn.net/g11d111/article/details/77430095
-+ https://blog.csdn.net/hiwallace/article/details/81333604
-+ https://blog.csdn.net/google19890102/article/details/45532745/
-
++ [FM算法（Factorization Machine）](https://blog.csdn.net/g11d111/article/details/77430095)
++ [FM系列算法解读（FM+FFM+DeepFM）](https://blog.csdn.net/hiwallace/article/details/81333604)
 
 
 > 原创文章，转载请注明：转载自[叠搭宝箱](http://stackbox.cn)的博客
