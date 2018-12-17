@@ -9,6 +9,8 @@ keywords: ['SpringBoot单元测试']
 对Controller层进行测试的时候, 如果是测试 REST接口, 使用 [rest-assured](https://github.com/jayway/rest-assured) 是一个十分不错的选择
 
 
+<!-- more -->
+
 + 单元测试的配置与以前基于XML的项目差不错
 + 如果写了多个TestCase文件, 为了使得他们公用一个SpringContext, 应该写一个抽象类来进行测试相关的配置, 然后其他的TestCase类继承自这个抽象类即可
 + 由于测试启动Context(如果带mvc)是启动了随机的接口, 在setUp阶段需要给 rest-assured 设置一下使用的端口

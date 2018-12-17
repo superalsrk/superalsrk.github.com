@@ -12,7 +12,7 @@ keywords: ['工具','如何生成长图片','PhantomJS网页截图']
 ## CasperJS
 
 CasperJS是一个基于PhantomJS的工具套件, 相比原生的PhantomJS使用起来更人性化, 比如可以通过下面的代码来对网页截图
-
+<!-- more -->
 
 ```javascript
 var casper = require('casper').create();

@@ -9,7 +9,7 @@ keywords:
 ## 事件协议
 
 事件机制是在supervisor v3.0开始引入的一个高级特性, 常用于守护程序崩溃时候的报警(发邮件/发短信)
-
+<!-- more -->
 该事件机制是一个简单的 `Listener/Notification`模型, Listener通过标准输入来获取supervisor发来的事件通知, 然后通过标准输出来告诉supervisor事件处理结果。过程中传递的EventNotification 由head和body两部分组成
 
 可以先通过stdout输出一个 `READY\n` 字符串来表明开始接受事件, 然后通过 `sys.stdin.readline()` 来获取head信息, head的结构如下:

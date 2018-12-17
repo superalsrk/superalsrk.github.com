@@ -10,7 +10,9 @@ keywords: ['PathFilter无法生效', 'Hadoop']
 1. 代码参考的是另外一个项目(用的是SequenceFileInputFormat),其PathFilter能正常工作
 2. 我写的这个MR用的公司的一个CombineFileInputFormat, 虽然设置了Filter但是程序运行的时候PathFilter甚至都没实例化。
 
+<!-- more -->
 感觉从PathFilter初始化这个点找应该是个正确的方向,As we all know, `FileInputFormat` 是所有XXFileInputFormat的父类,果然在其中找到了如下代码
+
 
 ```
 public abstract class FileInputFormat<K, V> extends InputFormat<K, V>  {

@@ -9,6 +9,7 @@ toc: true
 
 > 公司用的gitlab社区版, 跑CI的话需要折腾一下, 总体来说, 本地RUNNER最方便	
 
+<!-- more -->
 # 原理
 
 在Gitlab-CI中有一个叫 `Runner` 的概念, 按照官方定义, Runner一共有三种类型

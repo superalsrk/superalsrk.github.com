@@ -10,6 +10,7 @@ toc: true
 ## 前言
 Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 其主要用于各种网络和复杂系统, 特别是在处理网络关系数据这方面很有优势,下面是两个不错的例子
 
+<!-- more -->
 + [编程语言关系图](http://exploringdata.github.io/vis/programmers-search-relations/)
 
 ![](http://7jptw8.com1.z0.glb.clouddn.com/gephi/programming-rel.png)

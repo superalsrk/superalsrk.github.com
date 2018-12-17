@@ -13,6 +13,7 @@ toc: true
 
 最近在写一个MapReduce程序的时候,出现了读取HDFS文件截断的情况,代码如下:
 
+<!-- more -->
 ```
 //fs : FileSystem
 InputStream in = null;

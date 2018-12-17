@@ -6,7 +6,10 @@ description: Airflow是一个基于DAG(有向无环图)的任务管理系统
 keywords:
 ---
 
+
 airflow是airbnb家的基于DAG(有向无环图)的任务管理系统, 最简单的理解就是一个高级版的crontab, 他对标的是Azkaban，oozie，luigi,  为什么选airflow的原因在于, oozie实在是太古老了, luigi更新速度感人, Azkaban是java栈的, 对比下来airflow（1.8.1版本）是最能满足当下需求的了, 而且交互上的设计还是蛮优美的
+
+<!-- more -->
 
 ### DAG设计
 

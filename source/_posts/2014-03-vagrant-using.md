@@ -13,6 +13,8 @@ toc: true
 vagrant 是一款用于创建和部署虚拟化开发环境，一般都是用virtualbox做provider的，不过也可以使用其他虚拟机,比如vmware和docker,
 有国外大牛做出了这个[vagrant-docker](https://github.com/philspitler/vagrant-docker)项目,就是使用docker作为provider.
 
+<!-- more -->
+
 ## 安装 ##
 + 安装 [VirtualBox-4.3.6-91406-Win.exe](http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3.6-91406-Win.exe)
 + 安装 [Vagrant_1.4.3.msi](http://966b.http.dal05.cdn.softlayer.net/data-production/1835e881651ac8f27a9e4b815754f1934db71fe6?filename=Vagrant_1.4.3.msi)

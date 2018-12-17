@@ -16,6 +16,7 @@ toc: true
 + fork多个子进程, 子进程阻塞
 + 主进程使用wait来阻塞, 并打印关闭的子进程信息
 
+<!-- more -->
 
 ```python
 import os

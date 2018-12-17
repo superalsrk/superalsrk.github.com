@@ -11,6 +11,8 @@ toc: true
 
 新项目使用了主从数据库, 从数据库用来查询报表数据, 主数据库用来CRUD业务数据以及定时插入报表数据, 而且项目中同时使用了 *Spring Data JPA* 和 *Mybatis* , 配置多个数据源就成了一个很繁琐的问题。
 
+<!-- more -->
+
 按照平常的思路, 就是一个数据源配置一个 `DataSource` , 然后对于Mybatis来讲就要配置多个 `SqlSessionFactory` , DAO和Repository都需要根据文件夹进行区分, 好了, 等你配置完直到能跑的时候就会发现, 项目已经炸了。
 
 一种比较优雅的方法是, 对外只提供一个 `DataSource` 的虚拟中介, 在配置 `SessionFactory` / `SqlSessionFactory` 的时候用的是这个虚拟中介数据源, 等具体要用数据源的时候, 根据某个 Key值来决定到底使用哪一个数据源。 __AbstractRoutingDataSource__ 类就提供了这种功能。

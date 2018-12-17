@@ -16,6 +16,8 @@ toc: true
 + 登陆提交的表单会自动加一串奇奇怪怪的乱码
 + Constant变量中的中文在当成message放在json中也会出现乱码
 
+<!-- more -->
+
 一开始我以为是Linux的Locale环境变量引起的,但是改之依然没有效果,而从上面的那个第二条大致可以
 猜出是文件编译的时候把encoding搞乱了。因为@FanFan童鞋用直接eclipse的export导出的war是可用的,那就是说打包的时候错误了。
 

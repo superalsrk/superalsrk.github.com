@@ -13,6 +13,7 @@ mathjax: true
 
 Factorization Machine 主要目标是: 在数据稀疏的情况下解决组合特征的问题
 
+<!-- more -->
 
 ## 推导
 

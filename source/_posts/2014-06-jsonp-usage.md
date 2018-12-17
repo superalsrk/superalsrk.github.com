@@ -8,6 +8,8 @@ keywords: "jsonp,解决跨域问题,jsonp原理，CORS"
 
 首先，需要明确记住的是，jsonp不是ajax的一种特例，而是使用动态script来获取数据的一种方式。
 
+<!-- more -->
+
 ## 原理
 由于[同源策略](http://baike.baidu.com/link?url=LEaAmZN5IYfQA1MwEnUm8eIgio8sTU9lRdsvwtJKKHIuGFYxKRtOOXumMICnUHFHLyQk5kLzfyXzTm_ERmJkfK),一般来说位于 server1.example.com的网页无法与不是 server1.example.com 的服务器沟通， 而 HTML的 `<script>` 元素是个例外,利用这个策略，可以实现跨域获取数据的功能。
 

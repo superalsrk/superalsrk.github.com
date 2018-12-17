@@ -7,6 +7,9 @@ keywords: ['hexo-pdf']
 
 项目地址为: https://github.com/superalsrk/hexo-pdf , 已经PR到[官网](https://hexo.io/plugins/), 欢迎吐槽, 做这个插件的原因是
 
+
+<!-- more -->
+
 > 1. Slideshare在赵国被墙, WTF
 > 2. 国内的豆丁,CSDN,微盘分享都是基于Flash的, Safari不支持
 

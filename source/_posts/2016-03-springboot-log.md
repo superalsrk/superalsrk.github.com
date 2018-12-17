@@ -12,6 +12,8 @@ toc: true
 
 SpringBoot提供了一套基本的日志系统, 默认是基于 Logback+SLF4J, 最基本的配置文件如下
 
+<!-- more -->
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>

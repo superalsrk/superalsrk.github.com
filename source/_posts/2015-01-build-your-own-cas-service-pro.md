@@ -7,15 +7,16 @@ keywords: "cas自定义登陆,cas自定义Credentials,cas修改页面,cas单点�
 ---
 示例代码: https://github.com/superalsrk/modify-jasig-cas ,以下所有描述都基于版本 [3.5.2.1](http://mvnrepository.com/artifact/org.jasig.cas/cas-server-core/3.5.2.1)
 
+
 <!--more-->
 
-##Generally Design
+## Generally Design
 我们可以把一个war项目作为dependency，然后创建一个web项目webapp，然后只要将创建项目的 web.xml 和 index.jsp 去掉, 整个项目就能跑了。
 
 更重要的是，如果要对war进行扩展, 只要讲war对应的文件拷贝一份到webapp，打包的时候便能自动到替换。下面讲的 **修改XXX文件**, 都是对其拷贝进行修改,特此声明:
 
 webapp module的pom为[pom.xml](https://github.com/superalsrk/modify-jasig-cas/blob/master/webapp/pom.xml)
-##Auth Module
+## Auth Module
 
 ### 自定义Credentials
 

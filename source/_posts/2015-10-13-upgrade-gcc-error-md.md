@@ -11,6 +11,8 @@ keywords: ['GCC错误', 'gcc升级']
 
 >  我们要用C++11辣, 快滚回去升级G++
 
+<!-- more -->
+
 好吧, 既然都这么说了....然后就参考了[这个链接](http://engine.wohlnet.ru/forum/viewtopic.php?f=17&t=330) 和一些SF的回答整出来下面这个脚本
 
 ```bash
