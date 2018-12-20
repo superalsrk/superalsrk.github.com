@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Chord算法 | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一种P2P查找算法">
+<meta name="keywords" content="Chord,分布式查找算法">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chord算法">
+<meta property="og:url" content="http://stackbox.cn/garbage/2015-02-chord-algorithm.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="一种P2P查找算法">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://stackbox.cn/image/chord/napster.png">
+<meta property="og:image" content="http://stackbox.cn/image/chord/gnutella.png">
+<meta property="og:image" content="http://stackbox.cn/image/chord/chord1.png">
+<meta property="og:image" content="http://stackbox.cn/image/chord/chord2.png">
+<meta property="og:image" content="http://stackbox.cn/image/chord/chord4.png">
+<meta property="og:image" content="http://stackbox.cn/image/chord/chord6.png">
+<meta property="og:image" content="http://stackbox.cn/image/chord/chord7.png">
+<meta property="og:updated_time" content="2018-11-01T03:01:37.317Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chord算法">
+<meta name="twitter:description" content="一种P2P查找算法">
+<meta name="twitter:image" content="http://stackbox.cn/image/chord/napster.png">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="page-undefined" class="article article-type-page" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/garbage/2015-02-chord-algorithm.html" class="article-date">
+  <time datetime="2015-02-09T16:53:31.000Z" itemprop="datePublished">2015-02-10</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Chord算法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <p>在分布式计算中,如何快速查找存储有某段数据的节点是最核心的问题之一,Chord算法就是解决此类问题的方法之一</p>
+<a id="more"></a>
+<p>##基本概念</p>
+<p>###覆盖网络(overlaynetwork)###</p>
+<p>覆盖网络是这么一种网络:构建在其他网络之上、网络节点之间通过虚拟或逻辑连接在一起，比如云计算、分布式系统都是覆盖网络，因为其都构建于TCP/IP之上，且节点之间有联系。</p>
+<p>###结构化网络###</p>
+<p>传统的非结构化网络,节点与节点之间不存在组织关系,其查找算法一般有如下几种:</p>
+<ol>
+<li>Napster: 使用一个中心服务器处理所有的查询请求,中心服务器挂掉整个服务就挂掉了<br><img src="/image/chord/napster.png" alt=""></li>
+<li>Gnutella: 使用消息洪泛定位数据,查询消息发送到每个节点,一般会使用TTL来限制消息的转发次数,但是当网络规模<br>较大时网络负载会变大.<br><img src="/image/chord/gnutella.png" alt=""></li>
+<li>SN型: 即超级节点,和Napster时分类似,不过在整个网络中有多个中心节点,索引消息会在这些SN中进行传播,不过依然可能系统崩溃</li>
+</ol>
+<p>###DHT</p>
+<p>##算法概述</p>
+<p>###Chord环构造</p>
+<ol>
+<li>假设存在一个最大容量为 $x_mu$  的环形网络,我们假设以K代表资源,N代表节点,ID表示抽象环形网络中的标识符<br><img src="/image/chord/chord1.png" alt=""></li>
+<li><strong>ID(Node) = hash(IP,Port)</strong>, 将Node散列在Chord环中,一般选用 hash-1算法<br><img src="/image/chord/chord2.png" alt=""> </li>
+<li>之后开始对资源节点进行散列 <strong>ID(Key) = hash(Key)</strong>,对于K1来说, ID(1)不仅是个标识符,而且有节点存在,所以K1就放在了ID(1)上<br><img src="/image/chord/chord4.png" alt=""></li>
+<li>对于K2来说,K2只是一个标识符,不存在节点,ID(2)的继承节点是ID(3),所以K2放在了ID(3)上<br><img src="/image/chord/chord6.png" alt=""></li>
+<li>同理,K6本应该在节点ID(6)上,但是ID(6)不存在节点且其继承节点是ID(0),所以K6放在了ID(0)上<br><img src="/image/chord/chord7.png" alt=""></li>
+</ol>
+<p>###Finger路由表</p>
+<p>###节点查找</p>
+<ol>
+<li>近似二分查找</li>
+<li>直到找到资源为止</li>
+</ol>
+<p>###节点加入</p>
+<ol>
+<li>加入某节点N(n)后,构造Finger路由表</li>
+<li>如果存在K(n),则将K(n)从其他节点转移到N(n)</li>
+<li>其他节点的Finger路由表中,如某节点的Successor为N(n)的Successor,则重新指向为N(n)</li>
+</ol>
+<p>###节点退出</p>
+<ol>
+<li>某节点N(n)退出时, 先将它所有的资源都转移到该节点的Successor中</li>
+<li>删除节点</li>
+<li>其他节点的Finger路由表中,若某节点的Successor为N(n),则重新指向为N(n)的Successor</li>
+</ol>
+<p>###节点失效</p>
+<p>##参考资料</p>
+<ol>
+<li><a href="http://www.yeolar.com/note/2010/04/06/p2p-chord/" target="_blank" rel="noopener">结构化P2P网络chord算法研究与分析</a></li>
+<li><a href="http://www.cs.berkeley.edu/~kubitron/courses/cs294-4-F03/slides/lec03-chord.ppt" target="_blank" rel="noopener">Chord slide of berkeley</a></li>
+<li><a href="http://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf" target="_blank" rel="noopener">Chord sigcomm</a></li>
+<li><a href="http://blog.csdn.net/chen77716/article/details/6059575" target="_blank" rel="noopener">Chord算法（原理）</a></li>
+<li><a href="http://blog.csdn.net/wangxiaoqin00007/article/details/7374833" target="_blank" rel="noopener">Chord算法详解</a></li>
+</ol>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/">undefined</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/">undefined</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-11-01T03:01:37.317Z" itemprop="dateModified">2018-11-01</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+  
+<!--mathjax import -->
+<script type="text/x-mathjax-config">MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+    });
+</script>
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

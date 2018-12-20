@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Build Your Own Cas Service - Pro | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="对JASIG-CAS进行页面和业务的扩展具体步骤">
+<meta name="keywords" content="cas自定义登陆,cas自定义Credentials,cas修改页面,cas单点退出,cas获取多余属性,cas获取更多用户信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build Your Own Cas Service - Pro">
+<meta property="og:url" content="http://stackbox.cn/2015-01-build-your-own-cas-service-pro/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="对JASIG-CAS进行页面和业务的扩展具体步骤">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-17T11:09:10.064Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Build Your Own Cas Service - Pro">
+<meta name="twitter:description" content="对JASIG-CAS进行页面和业务的扩展具体步骤">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2015-01-build-your-own-cas-service-pro" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2015-01-build-your-own-cas-service-pro/" class="article-date">
+  <time datetime="2015-01-06T05:21:17.000Z" itemprop="datePublished">2015-01-06</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Build Your Own Cas Service - Pro
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <p>示例代码: <a href="https://github.com/superalsrk/modify-jasig-cas" target="_blank" rel="noopener">https://github.com/superalsrk/modify-jasig-cas</a> ,以下所有描述都基于版本 <a href="http://mvnrepository.com/artifact/org.jasig.cas/cas-server-core/3.5.2.1" target="_blank" rel="noopener">3.5.2.1</a></p>
+<a id="more"></a>
+<h2 id="Generally-Design"><a href="#Generally-Design" class="headerlink" title="Generally Design"></a>Generally Design</h2><p>我们可以把一个war项目作为dependency，然后创建一个web项目webapp，然后只要将创建项目的 web.xml 和 index.jsp 去掉, 整个项目就能跑了。</p>
+<p>更重要的是，如果要对war进行扩展, 只要讲war对应的文件拷贝一份到webapp，打包的时候便能自动到替换。下面讲的 <strong>修改XXX文件</strong>, 都是对其拷贝进行修改,特此声明:</p>
+<p>webapp module的pom为<a href="https://github.com/superalsrk/modify-jasig-cas/blob/master/webapp/pom.xml" target="_blank" rel="noopener">pom.xml</a></p>
+<h2 id="Auth-Module"><a href="#Auth-Module" class="headerlink" title="Auth Module"></a>Auth Module</h2><h3 id="自定义Credentials"><a href="#自定义Credentials" class="headerlink" title="自定义Credentials"></a>自定义Credentials</h3><p>Credentials是一个用户凭证, 可以理解为一个简易的pojo, 只要实现Credentials接口即可，我们的自定义凭证中除了用户名密码，还加了一个字段 product : String, 表明要登录的产品类型</p>
+<p>在Web Module中，需要进行如下修改</p>
+<p>1 . 在登录表单增加product字段,具体操作详见下个Section<br>2 . 在 /WEB-INF/login-webflow.xml 中,修改credentials类型为自定义的Credentials<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;var name=&quot;credentials&quot; class=&quot;com.nbrc.sso.cas.principal.NbrcCredentials&quot;/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>3 . 然后继续在 login-webflow.xml里找到 viewLoginForm ,进行数据绑定<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;view-state id=&quot;viewLoginForm&quot; view=&quot;casLoginView&quot; model=&quot;credentials&quot;&gt;  </span><br><span class="line">       &lt;binder&gt;  </span><br><span class="line">           &lt;binding property=&quot;username&quot; /&gt;  </span><br><span class="line">           &lt;binding property=&quot;password&quot; /&gt;  </span><br><span class="line">           &lt;binding property=&quot;product&quot;/&gt; &lt;!--增加这一行 --&gt;  </span><br><span class="line">       &lt;/binder&gt;  </span><br><span class="line">       ...  </span><br><span class="line">&lt;/view-state&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="自定义Handler"><a href="#自定义Handler" class="headerlink" title="自定义Handler"></a>自定义Handler</h3><p>自定义Handler只要实现接口 AuthenticationHandler 即可</p>
+<p>1 . 如果要在前台显示一个 权限不足 的信息, 只需在Handler里throw一个自定义的 AuthenticationException 即可<br>2 . support 接口用来声明handler是否支持某种类型的凭证<br>3 . 修改 /WEB-INF/deployConfigContext.xml ，进行handler的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;property name=&quot;authenticationHandlers&quot;&gt;</span><br><span class="line">            &lt;list&gt;</span><br><span class="line">                &lt;bean</span><br><span class="line">                    class=&quot;org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler&quot;</span><br><span class="line">                    p:httpClient-ref=&quot;httpClient&quot; p:requireSecure=&quot;false&quot; /&gt;</span><br><span class="line"></span><br><span class="line">                &lt;bean</span><br><span class="line">                    class=&quot;com.miaozhen.dashboard.darkportal.mechanism.DarkportalAuthenticationHandler&quot; /&gt;</span><br><span class="line">            &lt;/list&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="自定义Resolver"><a href="#自定义Resolver" class="headerlink" title="自定义Resolver"></a>自定义Resolver</h3><p>Resolver是一个Credentials 到 Principal的转换器， 其中Principal其实是javaEE中就已经定义好的</p>
+<p>1 . 修改 /WEB-INF/deployConfigContext.xml ，进行Resolver的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;property name=&quot;credentialsToPrincipalResolvers&quot;&gt;</span><br><span class="line">            &lt;list&gt;</span><br><span class="line">                &lt;bean</span><br><span class="line">                    class=&quot;com.miaozhen.dashboard.darkportal.mechanism.DarkportalCredentialsToPrincipalResolver&quot;&gt;</span><br><span class="line"></span><br><span class="line">                &lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">                &lt;bean</span><br><span class="line">                    class=&quot;org.jasig.cas.authentication.principal.HttpBasedServiceCredentialsToPrincipalResolver&quot; /&gt;</span><br><span class="line">            &lt;/list&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2 . resolver可以返回一个Principal, 个人觉得比较好用的方式是返回一个 #SimplePrincipal# ,除了用户的user信息外，还可以返回一个 AttrMap，不过需要参考下章进行Resolver视图的修改<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</span><br><span class="line">map.put(ATTR_USERNAME, mzCredentials.getUsername());</span><br><span class="line">map.put(ATTR_PASSWORD, mzCredentials.getPassword());</span><br><span class="line"></span><br><span class="line">SimplePrincipal simple = <span class="keyword">new</span> SimplePrincipal(mzCredentials.getUsername(), map);</span><br></pre></td></tr></table></figure></p>
+<p>##Web Module</p>
+<h3 id="自定义登陆页面"><a href="#自定义登陆页面" class="headerlink" title="自定义登陆页面"></a>自定义登陆页面</h3><p>正常的做法应该是copy一份defaults文件夹，然后在resources里copy对应的主题配置文件，最后在cas.properties里配置一下主题，不过为了省事直接改defaults里的文件就可以了</p>
+<p>default/ui/casLoginView.jsp 就是默认的登录界面，可以给form表单增加多余的字段。需要注意的是：form表单里还有一堆cas自带的input，这个在改页面的时候不能删掉。<br><br></p>
+<h3 id="自定义返回用户信息"><a href="#自定义返回用户信息" class="headerlink" title="自定义返回用户信息"></a>自定义返回用户信息</h3><p>1 . 在resolver中虽然返回了更多Attr，不过默认的Resolver视图不支持返回更多属性，需要对 protocol/2.0/casServiceValidationSuccess.jsp 页面进行扩展.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">page</span> <span class="attr">session</span>=<span class="string">"false"</span>%&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">taglib</span> <span class="attr">prefix</span>=<span class="string">"c"</span> <span class="attr">uri</span>=<span class="string">"http://java.sun.com/jsp/jstl/core"</span>%&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">%@</span> <span class="attr">taglib</span> <span class="attr">uri</span>=<span class="string">"http://java.sun.com/jsp/jstl/functions"</span> <span class="attr">prefix</span>=<span class="string">"fn"</span>%&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">cas:serviceResponse</span> <span class="attr">xmlns:cas</span>=<span class="string">'http://www.yale.edu/tp/cas'</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">cas:authenticationSuccess</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">cas:user</span>&gt;</span>$&#123;fn:escapeXml(assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.id)&#125;<span class="tag">&lt;/<span class="name">cas:user</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">c:if</span></span></span><br><span class="line"><span class="tag">            <span class="attr">test</span>=<span class="string">"$&#123;fn:length(assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.attributes) &gt; 0&#125;"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cas:attributes</span>&gt;</span></span><br><span class="line">                  <span class="tag">&lt;<span class="name">c:forEach</span> <span class="attr">var</span>=<span class="string">"attr"</span> <span class="attr">items</span>=<span class="string">"$&#123;assertion.chainedAuthentications[fn:length(assertion.chainedAuthentications)-1].principal.attributes&#125;"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">cas:$&#123;fn:escapeXml(attr.key)&#125;</span>&gt;</span>$&#123;fn:escapeXml(attr.value)&#125;<span class="tag">&lt;/<span class="name">cas:$&#123;fn:escapeXml(attr.key)&#125;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">c:forEach</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">cas:attributes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">c:if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">c:if</span> <span class="attr">test</span>=<span class="string">"$&#123;not empty pgtIou&#125;"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cas:proxyGrantingTicket</span>&gt;</span>$&#123;pgtIou&#125;<span class="tag">&lt;/<span class="name">cas:proxyGrantingTicket</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">c:if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">c:if</span> <span class="attr">test</span>=<span class="string">"$&#123;fn:length(assertion.chainedAuthentications) &gt; 1&#125;"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cas:proxies</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">c:forEach</span> <span class="attr">var</span>=<span class="string">"proxy"</span> <span class="attr">items</span>=<span class="string">"$&#123;assertion.chainedAuthentications&#125;"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">varStatus</span>=<span class="string">"loopStatus"</span> <span class="attr">begin</span>=<span class="string">"0"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">end</span>=<span class="string">"$&#123;fn:length(assertion.chainedAuthentications)-2&#125;"</span> <span class="attr">step</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">cas:proxy</span>&gt;</span>$&#123;fn:escapeXml(proxy.principal.id)&#125;<span class="tag">&lt;/<span class="name">cas:proxy</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">c:forEach</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">cas:proxies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">c:if</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">cas:authenticationSuccess</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">cas:serviceResponse</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>2 . 在client端，使用如下代码就可以获取多余属性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">AttributePrincipal attribute = (AttributePrincipal) request.getUserPrincipal();</span><br><span class="line">AttributePrincipal.getName()  就是 Resolver中返回的SimplePrincipal名字</span><br><span class="line">AttributePrincipal.getAttributes() 就是Resolver中返回的SinmplePrincipal的attributes</span><br></pre></td></tr></table></figure></p>
+<p>3 . 注意把deployerConfigContext.xml中 serviceRegistryDao全部删掉(cas),<a href="http://www.open-open.com/lib/view/open1329744257937.html" target="_blank" rel="noopener">参考资料</a></p>
+<p><br></p>
+<h3 id="CAS退出功能"><a href="#CAS退出功能" class="headerlink" title="CAS退出功能"></a>CAS退出功能</h3><p>默认的JASIG退出成功后会跳到一个 推出成功页面, 但我们想要的效果是退出CAS，并且退出已经登录的应用, 那么可以进行如下的配置：</p>
+<ol>
+<li>如果只是退出应用，那么在此访问页面的时候，cas-client又会向cas-server端进行请求验证,然后自动登录,所以同时退出cas和应用即可</li>
+<li>修改 cas-servlet.xml , 在 logoutController 的bean中增加属性 p:followServiceRedirects=”true”</li>
+<li>假如应用已经有一个退出controller，此contoller用来清空session,那么链接 <a href="http://cas.example.org/logout?service=http://localhost:8080/logout" target="_blank" rel="noopener">http://cas.example.org/logout?service=http://localhost:8080/logout</a> 便可以正常退出</li>
+</ol>
+<p>THE END</p>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:09:10.064Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015-05-dammit-maven/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          maven大坑
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015-01-build-your-own-cas-service-basic/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Build Your Own Cas Service - Basic</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

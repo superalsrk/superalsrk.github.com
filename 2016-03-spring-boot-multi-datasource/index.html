@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>SpringBoot-多数据源 | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用AbstractRoutingDataSource来配置多个数据源">
+<meta name="keywords" content="SpringBoot,主从分离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot-多数据源">
+<meta property="og:url" content="http://stackbox.cn/2016-03-spring-boot-multi-datasource/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="使用AbstractRoutingDataSource来配置多个数据源">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-17T11:07:30.149Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot-多数据源">
+<meta name="twitter:description" content="使用AbstractRoutingDataSource来配置多个数据源">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2016-03-spring-boot-multi-datasource" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2016-03-spring-boot-multi-datasource/" class="article-date">
+  <time datetime="2016-03-01T03:08:36.000Z" itemprop="datePublished">2016-03-01</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringBoot-多数据源
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>新项目使用了主从数据库, 从数据库用来查询报表数据, 主数据库用来CRUD业务数据以及定时插入报表数据, 而且项目中同时使用了 <em>Spring Data JPA</em> 和 <em>Mybatis</em> , 配置多个数据源就成了一个很繁琐的问题。</p>
+<a id="more"></a>
+<p>按照平常的思路, 就是一个数据源配置一个 <code>DataSource</code> , 然后对于Mybatis来讲就要配置多个 <code>SqlSessionFactory</code> , DAO和Repository都需要根据文件夹进行区分, 好了, 等你配置完直到能跑的时候就会发现, 项目已经炸了。</p>
+<p>一种比较优雅的方法是, 对外只提供一个 <code>DataSource</code> 的虚拟中介, 在配置 <code>SessionFactory</code> / <code>SqlSessionFactory</code> 的时候用的是这个虚拟中介数据源, 等具体要用数据源的时候, 根据某个 Key值来决定到底使用哪一个数据源。 <strong>AbstractRoutingDataSource</strong> 类就提供了这种功能。</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p><strong>AbstractRoutingDataSource</strong> 的源码如下, 这个类实现了 <strong>DataSource</strong> 接口无误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public abstract class AbstractRoutingDataSource extends AbstractDataSource implements InitializingBean &#123;</span><br><span class="line">    public Connection getConnection() throws SQLException &#123;  </span><br><span class="line">        return determineTargetDataSource().getConnection();  </span><br><span class="line">    &#125; </span><br><span class="line">    public Connection getConnection(String username, String password) throws SQLException &#123;  </span><br><span class="line">        return determineTargetDataSource().getConnection(username, password);  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后具体是怎么获取 Connection的呢? <strong>determineTargetDataSource</strong> 具体实现是这样的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">protected DataSource determineTargetDataSource() &#123;  </span><br><span class="line">    Assert.notNull(this.resolvedDataSources, &quot;DataSource router not initialized&quot;);  </span><br><span class="line">    Object lookupKey = determineCurrentLookupKey();  </span><br><span class="line">    DataSource dataSource = this.resolvedDataSources.get(lookupKey);  </span><br><span class="line">    if (dataSource == null &amp;&amp; (this.lenientFallback || lookupKey == null)) &#123;  </span><br><span class="line">        dataSource = this.resolvedDefaultDataSource;  </span><br><span class="line">    &#125;  </span><br><span class="line">    if (dataSource == null) &#123;  </span><br><span class="line">        throw new IllegalStateException(&quot;Cannot determine target DataSource for lookup key [&quot; + lookupKey + &quot;]&quot;);  </span><br><span class="line">    &#125;  </span><br><span class="line">    return dataSource;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好了, 重点来了, 这段代码的核心其实只有两点</p>
+<ul>
+<li><strong>resolvedDefaultDataSource</strong> : 一个 <code>Map&lt;Object, DataSource&gt;</code> , 就是在配置的时候手动配置的Key与数据源的对应关系</li>
+<li><strong>determineCurrentLookupKey()</strong> : 用来获取 Key 值, 需要在子类中实现获取Key的策略</li>
+</ul>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
+<li>项目中配置主从数据源, 并配置自己实现的AbstractRoutingDataSource子类做 主要的(@Primary)的DataSource</li>
+<li>实现AbstractRoutingDataSource子类, Key获取策略为从一个LocalThread变量中获取</li>
+<li>设计一个自定义注解,用于在Service层, DAO层, Repository层中使用</li>
+<li>通过AOP的方式去读取自定义注解, 然后根据注解往LocalThread里塞Key</li>
+<li>因为jetty可能会重用LocalThread, 所以需要在完成之后清空LocalThread变量, 至此, 多数据源配置完成</li>
+</ol>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>首先, 写一个自定义的注解, 用在Service中的各个Method上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Target(&#123;ElementType.METHOD, ElementType.TYPE&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">public @interface MzDataSource &#123;</span><br><span class="line">    String name() default MzDataSource.master;</span><br><span class="line">    public static String master = &quot;masterDataSource&quot;;</span><br><span class="line">    public static String slave = &quot;slaveDataSource&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后再写一个类用来存放LocalThread变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class DynamicDataSourceResolver extends AbstractRoutingDataSource &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object determineCurrentLookupKey() &#123;</span><br><span class="line">        String key =  DataSourceRouteHolder.getDataSourceKey();</span><br><span class="line">        if(StringUtils.isBlank(key)) &#123;</span><br><span class="line">            return MzDataSource.master;</span><br><span class="line">        &#125;</span><br><span class="line">        return key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再写一个普通风格的AbstractRoutingDataSource实现, 策略就是直接从LocalThread里直接取Key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class DataSourceRouteHolder &#123;</span><br><span class="line">    private static final ThreadLocal&lt;String&gt; dataSources = new ThreadLocal&lt;&gt;();</span><br><span class="line">        public static void setDataSourceKey(String customType) &#123;</span><br><span class="line">    dataSources.set(customType);</span><br><span class="line">    &#125;</span><br><span class="line">    public static String getDataSourceKey() &#123;</span><br><span class="line">        return (String) dataSources.get();</span><br><span class="line">    &#125;</span><br><span class="line">    public static void clearDataSourceKey() &#123;</span><br><span class="line">        dataSources.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用注解AOP的方式来读取Service方法上的自定义注解, 然后塞进ThreadLocal里, 下面的实现既支持Service接口里的注解, 也支持Service实现中注解, 实现优先级大于接口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">@Aspect</span><br><span class="line">public class DataSourceAspect &#123;</span><br><span class="line">    @Pointcut(&quot;execution(* cn.stackbox.service..*(..))&quot;)</span><br><span class="line">    public void aspect() &#123;&#125;</span><br><span class="line">    @Before(&quot;aspect()&quot;)</span><br><span class="line">    public void doBefore(JoinPoint point) throws Throwable &#123;</span><br><span class="line">        final MethodSignature methodSignature = (MethodSignature) point.getSignature();</span><br><span class="line">        Method method = methodSignature.getMethod();</span><br><span class="line">        MzDataSource mzDataSource = method.getAnnotation(MzDataSource.class);</span><br><span class="line">        if(method.getDeclaringClass().isInterface()) &#123;</span><br><span class="line">            method = point.getTarget().getClass().getMethod(method.getName(), method.getParameterTypes());</span><br><span class="line">        &#125;</span><br><span class="line">        mzDataSource = method.getAnnotation(MzDataSource.class);</span><br><span class="line">        if(null != mzDataSource) &#123;</span><br><span class="line">            DataSourceRouteHolder.setDataSourceKey(mzDataSource.name());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    @After(&quot;aspect()&quot;)</span><br><span class="line">    public void doAfter() &#123;</span><br><span class="line">        DataSourceRouteHolder.clearDataSourceKey();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后配置一下主从数据源, 需要注意的是需要在DynamicDataSourceResolver上加一个 <code>@Primary</code> 的注解, 不然会抛出一个类qualifier多个实例的异常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">@Primary</span><br><span class="line">public DataSource dataSource() &#123;</span><br><span class="line">    DynamicDataSourceResolver resolver = new DynamicDataSourceResolver();</span><br><span class="line">    Map&lt;Object, Object&gt; dataSources = Maps.newHashMap();</span><br><span class="line">    dataSources.put(&quot;masterDataSource&quot;, masterDataSource());</span><br><span class="line">    dataSources.put(&quot;slaveDataSource&quot;, slaveDataSource());</span><br><span class="line">    resolver.setTargetDataSources(dataSources);</span><br><span class="line">    return resolver;</span><br><span class="line">&#125;</span><br><span class="line">@Bean</span><br><span class="line">@ConfigurationProperties(prefix=&quot;spring.datasource.master&quot;)</span><br><span class="line">public DataSource masterDataSource() &#123;</span><br><span class="line">    return new org.apache.tomcat.jdbc.pool.DataSource();</span><br><span class="line">&#125;</span><br><span class="line">@Bean</span><br><span class="line">@ConfigurationProperties(prefix=&quot;spring.datasource.slave&quot;)</span><br><span class="line">public DataSource slaveDataSource() &#123;</span><br><span class="line">    return new org.apache.tomcat.jdbc.pool.DataSource();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><ol>
+<li>要及时清空LocalThread变量, 防止LocalThread重用引起的错误</li>
+<li>这种方式, 在配置分布式事务的时候相当复杂, 具体参考 <a href="http://hungryant.github.io/java/2015/11/26/java-spring-boot-jta.html" target="_blank" rel="noopener">此文</a></li>
+</ol>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:07:30.149Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016-03-springboot-log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          SpringBoot-日志相关
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016-01-2016-plans/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">2016年计划</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

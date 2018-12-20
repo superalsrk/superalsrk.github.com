@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="叠搭宝箱的个人博客">
+<meta name="keywords" content="叠搭宝箱, SpringBoot, 微服务, 分布式, 前端">
+<meta property="og:type" content="website">
+<meta property="og:title" content="叠搭宝箱">
+<meta property="og:url" content="http://stackbox.cn/page/6/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="叠搭宝箱的个人博客">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="叠搭宝箱">
+<meta name="twitter:description" content="叠搭宝箱的个人博客">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-2015-01-build-your-own-cas-service-basic" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2015-01-build-your-own-cas-service-basic/" class="article-date">
+  <time datetime="2015-01-06T05:21:16.000Z" itemprop="datePublished">2015-01-06</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015-01-build-your-own-cas-service-basic/">Build Your Own Cas Service - Basic</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>具体的CAS协议见, <a href="http://jasig.github.io/cas/4.0.x/protocol/CAS-Protocol.html" target="_blank" rel="noopener">CAS Protocal</a>,接下来我们讲jasig的CAS Implementation的几个重要的点，以下所有描述都基于版本 <a href="http://mvnrepository.com/artifact/org.jasig.cas/cas-server-core/3.5.2.1" target="_blank" rel="noopener">3.5.2.1</a><br>
+        
+          </p><p class="article-more-link">
+            <a href="/2015-01-build-your-own-cas-service-basic/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <a data-url="http://stackbox.cn/2015-01-build-your-own-cas-service-basic/" data-id="cjpw4lxb0001p4wfxjwqj5fr2" data_title="Build Your Own Cas Service - Basic" data_summary="预备知识具体的CAS协议见, CAS Protocal..." class="article-share-link">Share</a>
+      
+
+	  
+      
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:09:00.844Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-06-jsonp-usage" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2014-06-jsonp-usage/" class="article-date">
+  <time datetime="2014-06-21T09:16:00.000Z" itemprop="datePublished">2014-06-21</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014-06-jsonp-usage/">使用jsonp解决跨域问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先，需要明确记住的是，jsonp不是ajax的一种特例，而是使用动态script来获取数据的一种方式。</p>
+        
+          <p class="article-more-link">
+            <a href="/2014-06-jsonp-usage/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <a data-url="http://stackbox.cn/2014-06-jsonp-usage/" data-id="cjpw4lxay001m4wfxwxdzt4wq" data_title="使用jsonp解决跨域问题" data_summary="首先，需要明确记住的是，jsonp不是ajax的一种特..." class="article-share-link">Share</a>
+      
+
+	  
+      
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:06:18.738Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-03-vagrant-using" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2014-03-vagrant-using/" class="article-date">
+  <time datetime="2014-03-28T01:46:55.000Z" itemprop="datePublished">2014-03-28</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014-03-vagrant-using/">vagrant虚拟机使用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Vagrant-虚拟机使用"><a href="#Vagrant-虚拟机使用" class="headerlink" title="Vagrant 虚拟机使用"></a>Vagrant 虚拟机使用</h2><p>vagrant 是一款用于创建和部署虚拟化开发环境，一般都是用virtualbox做provider的，不过也可以使用其他虚拟机,比如vmware和docker,<br>有国外大牛做出了这个<a href="https://github.com/philspitler/vagrant-docker" target="_blank" rel="noopener">vagrant-docker</a>项目,就是使用docker作为provider.</p>
+        
+          <p class="article-more-link">
+            <a href="/2014-03-vagrant-using/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <a data-url="http://stackbox.cn/2014-03-vagrant-using/" data-id="cjpw4lxax001j4wfx890rgpxv" data_title="vagrant虚拟机使用" data_summary="Vagrant 虚拟机使用vagrant 是一款用于创..." class="article-share-link">Share</a>
+      
+
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:06:15.236Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/5/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span>
+  </nav>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

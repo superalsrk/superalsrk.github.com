@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>一个奇怪的wait4行为 | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="OSX/Linux 下 signal handler 和 wait4同时使用引起的奇怪问题">
+<meta name="keywords" content="Linux,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个奇怪的wait4行为">
+<meta property="og:url" content="http://stackbox.cn/2016-09-an-unusual-wait4-system-call-behavior/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="OSX/Linux 下 signal handler 和 wait4同时使用引起的奇怪问题">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-17T11:05:36.749Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个奇怪的wait4行为">
+<meta name="twitter:description" content="OSX/Linux 下 signal handler 和 wait4同时使用引起的奇怪问题">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2016-09-an-unusual-wait4-system-call-behavior" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2016-09-an-unusual-wait4-system-call-behavior/" class="article-date">
+  <time datetime="2016-09-07T06:16:32.000Z" itemprop="datePublished">2016-09-07</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一个奇怪的wait4行为
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近写Python的时候发现了一个Mac奇怪的问题, 代码逻辑大致为</p>
+<ul>
+<li>给<code>SIGCHLD</code>信号绑定一个singal handler</li>
+<li>fork多个子进程, 子进程阻塞</li>
+<li>主进程使用wait来阻塞, 并打印关闭的子进程信息</li>
+</ul>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> signal</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handler</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> (<span class="string">'xxxxxxx:'</span>, a, b)</span><br><span class="line">    signal.signal(signal.SIGCHLD, handler)</span><br><span class="line">signal.signal(signal.SIGCHLD, handler)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">5</span>):</span><br><span class="line">    pid = os.fork()</span><br><span class="line">    <span class="keyword">if</span> pid == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">            time.sleep(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    pid , sta = os.wait()</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">'pid:'</span>, pid, <span class="string">'stat:'</span>, sta)</span><br></pre></td></tr></table></figure>
+<p>而奇怪的行为就是</p>
+<ul>
+<li>Mac下wait如果没有被try except, 会扔一个EINTR错误 (慢系统调用中断错误)</li>
+<li>Linux下及时没有try except却没有什么问题</li>
+</ul>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>一开始怀疑的是 Python在OSX下的特殊bug, 然后我就用pyenv从2.7.1到3.5.0全部安了一遍, 最后发现3.5.0之后竟然没有EINTR错误, 查了一下3.5.0的 <a href="https://docs.python.org/3.5/whatsnew/changelog.html#python-3-5-0-final" target="_blank" rel="noopener">release note</a>, 此版本解决了<a href="http://bugs.python.org/issue19850" target="_blank" rel="noopener">#Issure19580</a>, 就是在添加signal handler的时候添加了了一句 <code>signal.siginterrupt(sig, False)</code>, 这样产生的效果就是某个Signal中断系统调用时, 不再抛出EINTER异常, 而是系统调用会自动重启。</p>
+<p>但是这样还是无法解释老版本python在不同平台行为不一致的问题，那么会不会是另外一种情况? 信号并不会对 wait system call产中中断, 虽说各种手册都说wait跟read一样都属于slow system call, 感觉上应该不是这个问题, 不过为了严谨起见还是测试了一下, 大概是给上面的demo绑定一个 <code>SIGWINCH</code> 信号的signal handler, 这个信号会在终端宽度变化时会触发, 果不其然, 无论你主进程是用 <code>os.read</code> 还是 <code>os.wait</code> 来阻塞, 无论是在 OSX还是Linux下, 触发SIGWINCH都会抛出EINTR错误。</p>
+<p>这就很尴尬了, 难道说是Linux下对SIGCHLD信号有特殊的关爱? 由于没见任何手册说过, 表示对这个猜想持保留意见, 幸运的是, 查资料的时候发现了 <code>strace/dtruss</code> 这类工具, 可以方便的跟踪系统调用信号 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># OSX下dtruss系统调用信息</span><br><span class="line">83483/0xb96f97:     43901 13551362     10 wait4(0xFFFFFFFF, 0x7FFF5D80553C, 0x0)                 = -1 Err#4</span><br><span class="line">83483/0xb96f97:     43915      80      2 sigreturn(0x7FFF5D805470, 0x1E, 0x0)            = 0 Err#-2</span><br><span class="line">83483/0xb96f97:     43951      10      6 write_nocancel(0x1, &quot;(&apos;xxxxxxx:&apos;, 20, &lt;frame object at 0x102970c90&gt;)\n\0&quot;, 0x30)                = 48 0</span><br><span class="line">83483/0xb96f97:     43960       4      0 sigaction(0x14, 0x7FFF5D805128, 0x7FFF5D805150)                 = 0 0</span><br><span class="line">83483/0xb96f97:     43977       5      2 write_nocancel(0x1, &quot;exception\n\0&quot;, 0xA)               = 10 0</span><br><span class="line">83483/0xb96f97:     43987       8      5 wait4(0xFFFFFFFF, 0x7FFF5D80553C, 0x0)          = 83520 0</span><br><span class="line">83483/0xb96f97:     43995       4      1 write_nocancel(0x1, &quot;(&apos;pid:&apos;, 83520, &apos;stat:&apos;, 9)\n\0&quot;, 0x1C)            = 28 0</span><br></pre></td></tr></table></figure>
+<p>这个是OSX下kill一个子进程之后的跟踪报告, 为了方便我在os.wait 外包了一层try cache, 可以看到, 第一行上来wait就扔了一个Err#4, 查了一下FreeBSD的文档发现 这个 Err#4 代表的是 Interrupted 的意思, 这个跟想象中的一样, SIGCHLD信号中断了 wait, sigreturn是和signal hanlder成对出现的(sigreturn的设计很有意思, 这个以后再细说), 在追踪报告中第三行就是handler的代码, 由于主进程EINTR了, 系统又重新绑定了一次signal handler(因为系统其实已经挂掉了..只不过try except +1s了, 所以需要重新绑信号), 然后此时又开始wait阻塞了,而且正好有一个僵尸进程, wait就开开心心的跑起来了</p>
+<p>Note: 如果显式的调用 <code>signal.signal(signal.SIGCHLD, signal.SIG_IGN)</code> , 子进程被kill时会直接没掉, 不会产生僵尸进程, 此时主进程wait就不能感知子进程挂掉了, 如果绑定的是一个自定义的handler, 子进程还是会转成僵尸进程, 就会被主进程wait感知</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Linux下strace系统调用信息</span><br><span class="line">[pid 25814] wait4(-1,</span><br><span class="line">[pid 25814] &lt;... wait4 resumed&gt; [&#123;WIFSIGNALED(s) &amp;&amp; WTERMSIG(s) == SIGQUIT &amp;&amp; WCOREDUMP(s)&#125;], 0, NULL) = 25904</span><br><span class="line">[pid 25814] --- SIGCHLD (Child exited) @ 0 (0) ---</span><br><span class="line">[pid 25814] rt_sigreturn(0xffffffff)    = 25904</span><br><span class="line">[pid 25814] write(1, &quot;(17, &lt;frame object at 0x7ffc4a17&quot;..., 39(17, &lt;frame object at 0x7ffc4a171910&gt;)) = 39</span><br><span class="line">[pid 25814] write(1, &quot;--&gt; 25904 131\n&quot;, 14--&gt; 25904 131) = 14</span><br></pre></td></tr></table></figure>
+<p>然后这个是代码在Linux下的追踪报告, 第一行是表示的是wait目前在阻塞状态, kill一个子进程时, 第二行竟然是 <strong> wait4 resumed </strong> , 查看文档可以明白 <strong> <xxxx resumed=""> </xxxx></strong> 代表system call 返回的意思, 注意注意: 此时还特么没有产生SIGCHLD信号, 也就是说:</p>
+<blockquote>
+<p>在子进程转换成僵尸进程的时候就立刻被主进程wait感知了, 而且此时主进程还没有第一时间接收到SIGCHLD信号,自然SIGCHLD信号就不会中断系统调用了。** </p>
+</blockquote>
+<p>后面就是正常的跑 signal handler和主进程的代码了, 得知这种真相的我, 内心有点崩溃</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h2 id="处理僵尸进程"><a href="#处理僵尸进程" class="headerlink" title="处理僵尸进程"></a>处理僵尸进程</h2><p>一般而言处理僵尸进程的方式有两种</p>
+<ul>
+<li><code>signal.signal(signal.SIGCHLD, signal.SIG_IGN)</code></li>
+<li>主进程wait处理关闭的子进程, 此时需要注意此文说明的问题</li>
+</ul>
+<h2 id="正确使用wait"><a href="#正确使用wait" class="headerlink" title="正确使用wait"></a>正确使用wait</h2><p>为了不抛出EINTR异常, 可以有以下方式</p>
+<ul>
+<li>绑定signal handler的时候, 手动设置 <code>signal.siginterrupt(sig, False)</code>, 虽然3.5.0会自动设置, 但是为了老版本最好手动加一下</li>
+<li>主进程 <code>os.wait</code> 的时候try except</li>
+<li>主进程 不用 <code>os.wait</code> 阻塞, 而是不停地 <code>os.waitpid(-1, os.WNOHANG)</code> 来获取子进程信息, 返回结果为0时直接continue</li>
+<li>也可以在 signal handler里进行 <code>os.wait</code> , 这样就保证了信号和终端的顺序, 就不会产生EINTR错误, 一些官方的linux c教程也是这么写的</li>
+</ul>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算机基础/">计算机基础</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:05:36.749Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017-01-2017-plans/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          2017年计划
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016-08-tail/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Tail Notes</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

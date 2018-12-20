@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>vagrant虚拟机使用 | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="vagrant是一个用于创建和部署虚拟化开发环境,这篇文章是vagrant的使用教程及一些tips">
+<meta name="keywords" content="vagrant,vagrant配置,vagrant目录映射">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vagrant虚拟机使用">
+<meta property="og:url" content="http://stackbox.cn/2014-03-vagrant-using/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="vagrant是一个用于创建和部署虚拟化开发环境,这篇文章是vagrant的使用教程及一些tips">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-17T11:06:15.236Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vagrant虚拟机使用">
+<meta name="twitter:description" content="vagrant是一个用于创建和部署虚拟化开发环境,这篇文章是vagrant的使用教程及一些tips">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2014-03-vagrant-using" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2014-03-vagrant-using/" class="article-date">
+  <time datetime="2014-03-28T01:46:55.000Z" itemprop="datePublished">2014-03-28</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      vagrant虚拟机使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <h2 id="Vagrant-虚拟机使用"><a href="#Vagrant-虚拟机使用" class="headerlink" title="Vagrant 虚拟机使用"></a>Vagrant 虚拟机使用</h2><p>vagrant 是一款用于创建和部署虚拟化开发环境，一般都是用virtualbox做provider的，不过也可以使用其他虚拟机,比如vmware和docker,<br>有国外大牛做出了这个<a href="https://github.com/philspitler/vagrant-docker" target="_blank" rel="noopener">vagrant-docker</a>项目,就是使用docker作为provider.</p>
+<a id="more"></a>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li>安装 <a href="http://download.virtualbox.org/virtualbox/4.3.6/VirtualBox-4.3.6-91406-Win.exe" target="_blank" rel="noopener">VirtualBox-4.3.6-91406-Win.exe</a></li>
+<li>安装 <a href="http://966b.http.dal05.cdn.softlayer.net/data-production/1835e881651ac8f27a9e4b815754f1934db71fe6?filename=Vagrant_1.4.3.msi" target="_blank" rel="noopener">Vagrant_1.4.3.msi</a></li>
+</ul>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
+<li><p>从<a href="http://www.vagrantbox.es/" target="_blank" rel="noopener">www.vagrantbox.es</a>‎下载虚拟机，我们使用32位的ubuntu版本 <a href="http://files.vagrantup.com/lucid32.box" target="_blank" rel="noopener">lucid32.box</a>(这个是ubuntu10不推荐使用)</p>
+</li>
+<li><p>将box文件拷贝到计算机的某个文件夹中，msys运行添加虚拟机命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vagrant box add lucid32 ./lucid32.box</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建内容如下的 <code>Vagrantfile</code> 文件</p>
+</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment"># -*- mode: ruby -*-</span></span><br><span class="line">  <span class="comment"># vi: set ft=ruby :</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Vagrantfile API/syntax version. Don't touch unless you know what you're doing!</span></span><br><span class="line">  VAGRANTFILE_API_VERSION = <span class="string">"2"</span></span><br><span class="line"></span><br><span class="line">  Vagrant.configure(VAGRANTFILE_API_VERSION) <span class="keyword">do</span> <span class="params">|config|</span></span><br><span class="line">  <span class="comment"># All Vagrant configuration is done here. The most common configuration</span></span><br><span class="line">  <span class="comment"># options are documented and commented below. For a complete reference,</span></span><br><span class="line">  <span class="comment"># please see the online documentation at vagrantup.com.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Every Vagrant virtual environment requires a box to build off of.</span></span><br><span class="line">  config.vm.box = <span class="string">"lucid32"</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The url from where the 'config.vm.box' box will be fetched if it</span></span><br><span class="line">  <span class="comment"># doesn't already exist on the user's system.</span></span><br><span class="line">  config.vm.box_url = <span class="string">"http://files.vagrantup.com/lucid32.box"</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Create a forwarded port mapping which allows access to a specific port</span></span><br><span class="line">  <span class="comment"># within the machine from a port on the host machine. In the example below,</span></span><br><span class="line">  <span class="comment"># accessing "localhost:8080" will access port 80 on the guest machine.</span></span><br><span class="line">  <span class="comment"># config.vm.network :forwarded_port, guest: 80, host: 8080</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Create a private network, which allows host-only access to the machine</span></span><br><span class="line">  <span class="comment"># using a specific IP.</span></span><br><span class="line">  <span class="comment"># config.vm.network :private_network, ip: "192.168.33.10"</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Create a public network, which generally matched to bridged network.</span></span><br><span class="line">  <span class="comment"># Bridged networks make the machine appear as another physical device on</span></span><br><span class="line">  <span class="comment"># your network.</span></span><br><span class="line">  <span class="comment"># config.vm.network :public_network</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># If true, then any SSH connections made will enable agent forwarding.</span></span><br><span class="line">  <span class="comment"># Default value: false</span></span><br><span class="line">  <span class="comment"># config.ssh.forward_agent = true</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Share an additional folder to the guest VM. The first argument is</span></span><br><span class="line">  <span class="comment"># the path on the host to the actual folder. The second argument is</span></span><br><span class="line">  <span class="comment"># the path on the guest to mount the folder. And the optional third</span></span><br><span class="line">  <span class="comment"># argument is a set of non-required options.</span></span><br><span class="line">  <span class="comment"># config.vm.synced_folder "../data", "/vagrant_data"</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Provider-specific configuration so you can fine-tune various</span></span><br><span class="line">  <span class="comment"># backing providers for Vagrant. These expose provider-specific options.</span></span><br><span class="line">  <span class="comment"># Example for VirtualBox:</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># config.vm.provider :virtualbox do |vb|</span></span><br><span class="line">  <span class="comment">#   # Don't boot with headless mode</span></span><br><span class="line">  <span class="comment">#   vb.gui = true</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment">#   # Use VBoxManage to customize the VM. For example to change memory:</span></span><br><span class="line">  <span class="comment">#   vb.customize ["modifyvm", :id, "--memory", "1024"]</span></span><br><span class="line">  <span class="comment"># end</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># View the documentation for the provider you're using for more</span></span><br><span class="line">  <span class="comment"># information on available options.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Enable provisioning with Puppet stand alone.  Puppet manifests</span></span><br><span class="line">  <span class="comment"># are contained in a directory path relative to this Vagrantfile.</span></span><br><span class="line">  <span class="comment"># You will need to create the manifests directory and a manifest in</span></span><br><span class="line">  <span class="comment"># the file base.pp in the manifests_path directory.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># An example Puppet manifest to provision the message of the day:</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># # group &#123; "puppet":</span></span><br><span class="line">  <span class="comment"># #   ensure =&gt; "present",</span></span><br><span class="line">  <span class="comment"># # &#125;</span></span><br><span class="line">  <span class="comment"># #</span></span><br><span class="line">  <span class="comment"># # File &#123; owner =&gt; 0, group =&gt; 0, mode =&gt; 0644 &#125;</span></span><br><span class="line">  <span class="comment"># #</span></span><br><span class="line">  <span class="comment"># # file &#123; '/etc/motd':</span></span><br><span class="line">  <span class="comment"># #   content =&gt; "Welcome to your Vagrant-built virtual machine!</span></span><br><span class="line">  <span class="comment"># #               Managed by Puppet.\n"</span></span><br><span class="line">  <span class="comment"># # &#125;</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># config.vm.provision :puppet do |puppet|</span></span><br><span class="line">  <span class="comment">#   puppet.manifests_path = "manifests"</span></span><br><span class="line">  <span class="comment">#   puppet.manifest_file  = "init.pp"</span></span><br><span class="line">  <span class="comment"># end</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Enable provisioning with chef solo, specifying a cookbooks path, roles</span></span><br><span class="line">  <span class="comment"># path, and data_bags path (all relative to this Vagrantfile), and adding</span></span><br><span class="line">  <span class="comment"># some recipes and/or roles.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># config.vm.provision :chef_solo do |chef|</span></span><br><span class="line">  <span class="comment">#   chef.cookbooks_path = "../my-recipes/cookbooks"</span></span><br><span class="line">  <span class="comment">#   chef.roles_path = "../my-recipes/roles"</span></span><br><span class="line">  <span class="comment">#   chef.data_bags_path = "../my-recipes/data_bags"</span></span><br><span class="line">  <span class="comment">#   chef.add_recipe "mysql"</span></span><br><span class="line">  <span class="comment">#   chef.add_role "web"</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment">#   # You may also specify custom JSON attributes:</span></span><br><span class="line">  <span class="comment">#   chef.json = &#123; :mysql_password =&gt; "foo" &#125;</span></span><br><span class="line">  <span class="comment"># end</span></span><br><span class="line"></span><br><span class="line">  $script = <span class="string">%Q&#123;</span></span><br><span class="line"><span class="string">    sudo apt-get update</span></span><br><span class="line"><span class="string">    sudo apt-get install nasm make build-essential grub qemu zip -y</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  config.vm.provision <span class="symbol">:shell</span>, <span class="symbol">:inline</span> =&gt; $script</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Enable provisioning with chef server, specifying the chef server URL,</span></span><br><span class="line">  <span class="comment"># and the path to the validation key (relative to this Vagrantfile).</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># The Opscode Platform uses HTTPS. Substitute your organization for</span></span><br><span class="line">  <span class="comment"># ORGNAME in the URL and validation key.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># If you have your own Chef Server, use the appropriate URL, which may be</span></span><br><span class="line">  <span class="comment"># HTTP instead of HTTPS depending on your configuration. Also change the</span></span><br><span class="line">  <span class="comment"># validation key to validation.pem.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># config.vm.provision :chef_client do |chef|</span></span><br><span class="line">  <span class="comment">#   chef.chef_server_url = "https://api.opscode.com/organizations/ORGNAME"</span></span><br><span class="line">  <span class="comment">#   chef.validation_key_path = "ORGNAME-validator.pem"</span></span><br><span class="line">  <span class="comment"># end</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># If you're using the Opscode platform, your validator client is</span></span><br><span class="line">  <span class="comment"># ORGNAME-validator, replacing ORGNAME with your organization name.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># If you have your own Chef Server, the default validation client name is</span></span><br><span class="line">  <span class="comment"># chef-validator, unless you changed the configuration.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment">#   chef.validation_client_name = "ORGNAME-validator"</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入Vagrantfile的同名目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看帮助</span></span><br><span class="line">$ vagrant --<span class="built_in">help</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#启动虚拟机</span></span><br><span class="line">$ vagrant up</span><br><span class="line"></span><br><span class="line"><span class="comment">#关闭虚拟机</span></span><br><span class="line">$ vagrant halt</span><br><span class="line"></span><br><span class="line"><span class="comment">#ssh连接</span></span><br><span class="line">$ vagrant ssh</span><br><span class="line"></span><br><span class="line"><span class="comment">#显示add的所有box</span></span><br><span class="line">$ vagrant box list</span><br><span class="line"></span><br><span class="line"><span class="comment">#remove box,第一个参数是box的名称，第二个是provider的名称</span></span><br><span class="line">$ vagrant box remove precise64 virtualbox</span><br><span class="line"></span><br><span class="line"><span class="comment">#摧毁一个vm，(在VagrantFile相同文件夹下)，注意与 vagrant box remove的不同</span></span><br><span class="line">$ vagrant destroy</span><br><span class="line"></span><br><span class="line"><span class="comment">#也可以通过ssh-client连接，用户名密码都为vagrant,端口为2222</span></span><br><span class="line">$ ssh -p 2222 vagrant@localhost</span><br></pre></td></tr></table></figure>
+<h2 id="导出Box"><a href="#导出Box" class="headerlink" title="导出Box"></a>导出Box</h2><ul>
+<li>步骤<ol>
+<li>cd into the directory with your <strong>Vagrantile</strong></li>
+<li>run <code>vagrant package</code>· This will export a box file called package.box by default</li>
+<li>run <code>vagrant box add foo package.box</code> virtualbox to add package.box to your existing boxes. (Assuming you are using virtualbox and not VMWare)</li>
+<li>run <code>vagrant box list</code> to verify it was added.</li>
+</ol>
+</li>
+</ul>
+<p> Now you can just create a new folder, run vagrant init as normal and set your box to the following:<code>config.vm.box = &quot;foo&quot;</code>,The new VM will spin up with the exact data that was present in the previous VM.</p>
+<h2 id="时间同步"><a href="#时间同步" class="headerlink" title="时间同步"></a>时间同步</h2><p>把<code>virtualbox/bin</code>加入环境变量，运行一下命令，设置时间同步（win下也可）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#List vms</span></span><br><span class="line">$ VBoxManage list vms</span><br><span class="line"></span><br><span class="line"><span class="comment">#get status of time sync</span></span><br><span class="line">$ VBoxManage getextradata &lt;vm-name&gt; VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled</span><br><span class="line"></span><br><span class="line"><span class="comment">#<span class="doctag">NOTE:</span> Make sure to restart the VM after changing these settings.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#disable time sync</span></span><br><span class="line">$ VBoxManage setextradata &lt;vm-name&gt; VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 1</span><br><span class="line"></span><br><span class="line"><span class="comment">#enable time sync</span></span><br><span class="line">$ VBoxManage setextradata &lt;vm-name&gt; VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled 0</span><br></pre></td></tr></table></figure></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><ul>
+<li>网络配置<ol>
+<li>较为常用是端口映射，就是将虚拟机中的端口映射到宿主机对应的端口直接使用 ，在Vagrantfile中配置：<code>config.vm.network :forwarded_port, guest: 80, host: 8080</code>,guest: 80 表示虚拟机中的80端口， host: 8080 表示映射到宿主机的8080端口</li>
+<li>如果需要自己自由的访问虚拟机，但是别人不需要访问虚拟机， ，在Vagrantfile中配置：<code>config.vm.network :private_network, ip: &quot;192.168.1.104&quot;</code>,192.168.1.104表示虚拟机的IP，多台虚拟机的话需要互相访问的话，设置在相同网段即可</li>
+<li>如果需要将虚拟机作为当前局域网中的一台计算机，由局域网进行DHCP，那么在Vagrantfile中配置：<code>config.vm.network :public_network</code></li>
+</ol>
+</li>
+</ul>
+<ul>
+<li><p>目录映射</p>
+<p>虚拟机初始化启动时， host的当前工作目录就会映射到 guest的 <code>/vagrant</code> 文件夹下</p>
+<p>也可以通过VagrantFile <code>config.vm.synced_folder &quot;wwwroot/&quot;, &quot;/var/www&quot;</code> 完成映射配置</p>
+</li>
+</ul>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><ul>
+<li>找不到rsync命令:  参考 <a href="http://stackoverflow.com/questions/34176041/vagrant-with-virtualbox-on-windows10-rsync-could-not-be-found-on-your-path" target="_blank" rel="noopener">这个</a>, 配置文件中加入 <code>config.vm.synced_folder &quot;.&quot;, &quot;/vagrant&quot;, type: &quot;virtualbox&quot;</code> 即可</li>
+<li><code>vagrant up</code> 的时候私钥错误, 可以暂时删除 <code>.vagrant/**/private_key.</code>, 用用户名密码登陆</li>
+<li>推荐fedora cloud镜像</li>
+</ul>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:06:15.236Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014-06-jsonp-usage/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用jsonp解决跨域问题
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

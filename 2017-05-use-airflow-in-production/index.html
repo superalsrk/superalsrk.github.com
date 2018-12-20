@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>生产环境使用Airflow | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Airflow是一个基于DAG(有向无环图)的任务管理系统">
+<meta name="keywords" content="叠搭宝箱, SpringBoot, 微服务, 分布式, 前端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生产环境使用Airflow">
+<meta property="og:url" content="http://stackbox.cn/2017-05-use-airflow-in-production/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="Airflow是一个基于DAG(有向无环图)的任务管理系统">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-17T11:05:14.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="生产环境使用Airflow">
+<meta name="twitter:description" content="Airflow是一个基于DAG(有向无环图)的任务管理系统">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2017-05-use-airflow-in-production" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2017-05-use-airflow-in-production/" class="article-date">
+  <time datetime="2017-05-12T10:36:37.000Z" itemprop="datePublished">2017-05-12</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      生产环境使用Airflow
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <p>airflow是airbnb家的基于DAG(有向无环图)的任务管理系统, 最简单的理解就是一个高级版的crontab, 他对标的是Azkaban，oozie，luigi,  为什么选airflow的原因在于, oozie实在是太古老了, luigi更新速度感人, Azkaban是java栈的, 对比下来airflow（1.8.1版本）是最能满足当下需求的了, 而且交互上的设计还是蛮优美的</p>
+<a id="more"></a>
+<h3 id="DAG设计"><a href="#DAG设计" class="headerlink" title="DAG设计"></a>DAG设计</h3><p>一个DAG是由一个或多个任务组成的, 这一块比较考验你对整个数据流程的设计, 具体可以参考<a href="https://segmentfault.com/a/1190000005078547" target="_blank" rel="noopener">这篇文章</a></p>
+<h3 id="Broker与Executor选择"><a href="#Broker与Executor选择" class="headerlink" title="Broker与Executor选择"></a>Broker与Executor选择</h3><p>请务必使用RabbitMQ+CeleryExecutor, 毕竟这个也是Celery官方推荐的做法, 这样就可以使用一些很棒的功能, 比如webui上点击错误的Task然后ReRun</p>
+<h3 id="Supervisor"><a href="#Supervisor" class="headerlink" title="Supervisor"></a>Supervisor</h3><p>在使用supervisor的启动worker,server,scheduler的时候, 请务必给配置的supervisor任务加上</p>
+<blockquote>
+<p>environment=AIRFLOW_HOME=xxxxxxxxxx</p>
+</blockquote>
+<p>主要原因在于如果你的supervisor是通过调用一个自定义的脚本来运行的,  在启动worker的时候会另外启动一个serve_log服务, 如果没有设置正确的环境变量, serve_log 会在默认的AIRFLOW_HOME里找日志, 导致无法在webui里查看日志</p>
+<h3 id="Serve-log"><a href="#Serve-log" class="headerlink" title="Serve_log"></a>Serve_log</h3><p>如果在多个机器上部署了worker, 那么你需要iptables开启那些机器的8793端口, 这样webui才能查看跨机器worker的任务日志</p>
+<h3 id="AMPQ库"><a href="#AMPQ库" class="headerlink" title="AMPQ库"></a>AMPQ库</h3><p>celery提供了两种库来实现amqp, 一种是默认的kombu, 另外一个是librabbitmq, 后者是对其c模块的绑定,  在1.8.1版本中,  使用的kombu的时候会出现scheduler自动断掉的问题, 这个应该是其对应版本4.0.2的问题, 当切成librabbitmq的时候, server 与 scheduler运行正常, 但是worker的从来不consume任务, 最后查出原因: Celery4.0.2的协议发生了变化但是librabbitmq还没有对应修改, 解决方法是, 修改源码里的 executors/celery_executor.py文件然后加入参数</p>
+<blockquote>
+<p>CELERY_TASK_PROTOCOL = 1</p>
+</blockquote>
+<h3 id="RabbitMQ连接卡死"><a href="#RabbitMQ连接卡死" class="headerlink" title="RabbitMQ连接卡死"></a>RabbitMQ连接卡死</h3><p>运行一段时间过后, 由于网络问题导致所有任务都在queued状态, 除非把worker重启才能生效, 查资料有人说是clelery的broker pool有问题, 继续给celery_executor.py加入参数</p>
+<blockquote>
+<p>BROKER_POOL_LIMIT=0  //不使用连接池</p>
+</blockquote>
+<p>另外这样只会减少卡死的几率, 最好使用crontab定时重启worker</p>
+<h3 id="特定任务只在特殊机器上运行"><a href="#特定任务只在特殊机器上运行" class="headerlink" title="特定任务只在特殊机器上运行"></a>特定任务只在特殊机器上运行</h3><p>可以给DAG中的task指定一个queue, 然后在特定的机器上运行 airflow worker -q=QUEUE_NAME 即可实现</p>
+<h3 id="RabbitMQ中的queue数量过多问题"><a href="#RabbitMQ中的queue数量过多问题" class="headerlink" title="RabbitMQ中的queue数量过多问题"></a>RabbitMQ中的queue数量过多问题</h3><p>celery为了让scheduler知道每个task的结果并且知道结果的时间为 O(1) , 那么唯一的解决方式就是给每一个任务创建一个UUID的queue, 默认这个queue的过期时间是1天, 可以通过更改celery_executor.py的参数来调节这个过期时间</p>
+<blockquote>
+<p>CELERY_TASK_RESULT_EXPIRES = <strong>time in seconds</strong></p>
+</blockquote>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:05:14.828Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017-07-2017-mid-schedule/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          2017年中总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017-02-delve-deep-into-supervisor-event/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">深入理解Supervisor事件机制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

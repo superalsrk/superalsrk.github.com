@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>记录一次奇葩的性能调优经历 | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="几个常用的性能分析工具">
+<meta name="keywords" content="iostat使用, iotop使用, 机器负载查看">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记录一次奇葩的性能调优经历">
+<meta property="og:url" content="http://stackbox.cn/2016-07-some-performance-realated-tools/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="几个常用的性能分析工具">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://box-images.qiniudn.com//blog/iostat-1.png">
+<meta property="og:image" content="http://box-images.qiniudn.com//blog/iotop-1.png">
+<meta property="og:updated_time" content="2018-12-17T11:05:49.079Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记录一次奇葩的性能调优经历">
+<meta name="twitter:description" content="几个常用的性能分析工具">
+<meta name="twitter:image" content="http://box-images.qiniudn.com//blog/iostat-1.png">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2016-07-some-performance-realated-tools" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2016-07-some-performance-realated-tools/" class="article-date">
+  <time datetime="2016-07-29T14:23:00.000Z" itemprop="datePublished">2016-07-29</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      记录一次奇葩的性能调优经历
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <p>今天在写一个Koa2程序的时候无意间瞥了一眼日志, 发现某个简单的保存表单的API竟然平均耗时 <strong>900ms</strong>, <strong>900ms</strong> 啊同学们! 这种需求的正常耗时应该再除以10一下</p>
+<a id="more"></a>
+<h2 id="SQL-Profile分析"><a href="#SQL-Profile分析" class="headerlink" title="SQL Profile分析"></a>SQL Profile分析</h2><p>首先需要知道sql语句在哪个阶段慢, mysql提供了profile工具来帮助我们做性能分析:</p>
+<blockquote>
+<p>MYSQL&gt; set profiling=1<br>MYSQL&gt; insert into t_test_table values (‘hello’)<br>MYSQL&gt; show profile for query 1</p>
+</blockquote>
+<p>输入完上面的sql语句后, 会发现主要的耗时是在一个叫 <strong>query end</strong> 的阶段上, <a href="http://inetkiller.github.io/2014/05/20/mysql语句性能分析与优化/" target="_blank" rel="noopener">这篇文章</a>对此阶段的描述如下</p>
+<blockquote>
+<p>google上得到答案，将mysql的配置文件my.conf里加上一句innodb_flush_log_at_trx_commit = 0。 经过验证，成功解决问题，速度提升非常明显（上面的改动同时对insert操作也起了作用）。 同时留下疑问：query end是什么状态，为什么会用这么久的时间，为什么加上innodb_flush_log_at_trx_commit = 0后性能提升会这么大？</p>
+</blockquote>
+<blockquote>
+<p>query end是什么状态？ mysql的官方文档解释是：This state occurs after processing a query but before the freeing items state.我的理解是语句执行完毕了，但是还有一些后续工作没做完时的状态。</p>
+</blockquote>
+<blockquote>
+<p>那么freeing items 又是什么状态呢？ The thread has executed a command. Some freeing of items done during this state involves the query cache. This state is usually followed by cleaning up.就是释放查询缓存里面的空间（因为是update操作，所以相应的缓存里的记录就无效了，所以需要有这一步做处理）。</p>
+</blockquote>
+<blockquote>
+<p>innodb_flush_log_at_trx_commit的默认值是1，此时的行为是： the log buffer is written out to the log file at each transaction commit and the flush to disk operation is performed on the log file。log buffer的作用:允许事务在执行完成之后才将日志（事务需要维护一个日志）写到磁盘上，时间主要应该就是耗费在磁盘IO上？</p>
+</blockquote>
+<blockquote>
+<p>而将innodb_flush_log_at_trx_commit的值改为0后，行为如下： If the value of innodb_flush_log_at_trx_commit is 0, the log buffer is written out to the log file once per second and the flush to disk operation is performed on the log file, but nothing is done at a transaction commit。 可以看到，改成0后，本来应该每次提交都进行的操作，变成了每秒钟才进行一次，所以及大的节省了时间。</p>
+</blockquote>
+<blockquote>
+<p>将innodb_flush_log_at_trx_commit的值设置为0有一个副作用：任何服务器端mysql程序的崩溃会导致最后一秒的事务丢失(还没来得及到到日志文件中)。但是考虑到本应用对事务不必有如此严格的要求，所以这是可以接受的。</p>
+</blockquote>
+<p>但是, 这样直接该参数太暴力了, 可能会丢数, 不推荐这么搞, 而SQL慢可能是IO压力太大的缘故, 下面通过一些工具来查看一下机器负载</p>
+<h2 id="查看硬盘负载"><a href="#查看硬盘负载" class="headerlink" title="查看硬盘负载"></a>查看硬盘负载</h2><p><a href="http://linux.die.net/man/1/iostat" target="_blank" rel="noopener"><strong>iostat</strong></a> 命令可以查看磁盘负载, 输入命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo iostat -d -x -k 1 40</span><br></pre></td></tr></table></figure>
+<p><img src="http://box-images.qiniudn.com//blog/iostat-1.png" alt=""></p>
+<p>其中 <strong>%util</strong> 字段表示一秒中有百分之多少的时间用于 I/O 操作，即被io消耗的cpu百分比, 如果 %util 接近 100%，说明产生的I/O请求太多，I/O系统已经满负荷，该磁盘可能存在瓶颈</p>
+<h2 id="查看进程IO占用"><a href="#查看进程IO占用" class="headerlink" title="查看进程IO占用"></a>查看进程IO占用</h2><p>那么如何知道哪个程序占用的IO比较高呢? Linux下的 <a href="http://guichaz.free.fr/iotop/" target="_blank" rel="noopener"><strong>iotop</strong></a>命令包你满意, 该命令可以用yum进行安装, 在机器上运行iotop的结果如下图所示</p>
+<p><img src="http://box-images.qiniudn.com//blog/iotop-1.png" alt=""></p>
+<p>结果发现读IO进程主要是一个rsync脚本, 写IO进程是一堆爬虫以及elasticsearch…</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>So..最后让另外的爬虫程序爬慢一点, insert 语句的速度变有了明显的提升 (<a href="javascript:void" target="_blank" rel="noopener">#还是因为太穷没机器..ORZ#</a>)</p>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能优化/">性能优化</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:05:49.079Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016-08-tail/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Tail Notes
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016-07-21-weixin-spider-notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">微信公众号爬虫</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

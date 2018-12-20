@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Factorization Machine | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="因子分解机从入门到实践">
+<meta name="keywords" content="统计学,FM,机器学习,因子分解机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Factorization Machine">
+<meta property="og:url" content="http://stackbox.cn/2018-12-factorization-machine/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="因子分解机从入门到实践">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-18T02:59:03.992Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Factorization Machine">
+<meta name="twitter:description" content="因子分解机从入门到实践">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2018-12-factorization-machine" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2018-12-factorization-machine/" class="article-date">
+  <time datetime="2018-12-16T12:16:53.000Z" itemprop="datePublished">2018-12-16</time>
+</a>
+
+
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Factorization Machine
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>Factorization Machine 主要目标是: 在数据稀疏的情况下解决组合特征的问题</p>
+<a id="more"></a>
+<h2 id="推导"><a href="#推导" class="headerlink" title="推导"></a>推导</h2><p>一般的线性模型为(n为特征维度)</p>
+<p>\begin{align}<br>\hat y = \omega_0 + \sum_{i=1}^{n}\omega_{i}x_{i}<br>\end{align}</p>
+<p>线性模型的各个特征是独立的, 但实际上有一些组合特征是很有意义的, 比如在新闻推荐系统中, 喜欢军事新闻的也很可能喜欢国际新闻,  喜欢时尚新闻的也很可能喜欢娱乐新闻, 把两两的特征组合考虑进去就能得到度为2的FM模型</p>
+<p>\begin{align}<br>\hat y = \omega_0 + \sum_{i=1}^{n}\omega_{i}x_{i} + \sum_{i=1}^{n}\sum_{j=i+1}^{n}\omega_{ij}x_{i}x_{j}<br>\end{align}</p>
+<p>对于 \( \omega_{ij} \) 构成的实对称矩阵 \( W \), 该矩阵为正定矩阵, 可以进行矩阵分解</p>
+<p>\begin{align}<br>W = VV^{T}<br>\end{align}</p>
+<p>其中矩阵 \( V \) 为一个  \( n \times k \) 的矩阵, 关于k的选择论文中是这么说的</p>
+<blockquote>
+<p>It is well known that for any positive definite matrix W, there exists a matrix V such that W =V · Vt provided that k is sufficiently large. This shows that a FM can express any interaction matrix W if k is chosen large enough. Nevertheless in sparse settings, typically a small k should be chosen because there is not enough data to estimate complex interactions W. Restricting k – and thus the expressiveness of the FM – leads to better generalization and thus improved interaction matrices under sparsity</p>
+</blockquote>
+<p>那么 FM公式中 \( \omega_{ij} \) 就可以表示为 矩阵\( V \) 中两个向量的点积</p>
+<p>\begin{align}<br>\hat y &amp; = \omega_0 + \sum_{i=1}^{n}\omega_{i}x_{i} + \sum_{i=1}^{n}\sum_{j=i+1}^{n} &lt;v_{i}, v_{j}&gt;x_{i}x_{j}<br>\end{align}</p>
+<p>这样二项式参数的数量就由原来的 \( \frac{n(n-1)}{2}\) 变成了  \( nk \), 而且对于原来的参数 \( \omega_{hi}\) 和 \( \omega_{hj} \) , 这两个参数是相互独立的, 在因子化之后就等同于 \( &lt;v_{h}, v_{i}&gt;\) 和  \( &lt;v_{h}, v_{j}&gt;\), 他们之间是有共同项的, 因此 所有包含 \( x_{i} \)的非0组合特征都可以用来学习隐向量 \( v_{i}\), 很大程度减少了数据稀疏带来的影响, 此外,上述公式的二次项部分算法复杂度为  \( O(kn^2) \)， 还可以进行优化</p>
+<p>\begin{align}<br>\sum_{i=1}^{n}\sum_{j=i+1}^{n} &lt;v_{i}, v_{j}&gt;x_{i}x_{j} &amp; = \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n} &lt;v_{i}, v_{j}&gt;x_{i}x_{j} - \frac{1}{2}\sum_{i=1}^{n} &lt;v_{i}, v_{i}&gt;x_{i}x_{i} \\<br>&amp; =\frac{1}{2} (\sum_{i=1}^{n}\sum_{j=1}^{n}\sum_{f=1}^{k}v_{i,f}v_{j,f}x_{i}x_{j} - \sum_{i=1}^{n}\sum_{f=1}^{k}v_{i, f}v_{i,f}x_{i}x_{i}) \\<br>&amp; = \frac{1}{2}\sum_{f=1}^{k}((\sum_{i=1}^{n}v_{i,f}x_{i})(\sum_{j=1}^{n}v_{j,f}x_{j}) - \sum_{i=1}^{n} v_{i,f}^2 x_i^2)\\<br>&amp; = \frac{1}{2}\sum_{f=1}^{k}((\sum_{i=1}^{n}v_{i,f}x_{i})^2 - \sum_{i=1}^{n} v_{i,f}^2 x_i^2)\\<br>\end{align}</p>
+<p>此时的算法复杂度为 \( O(kn) \)</p>
+<p>完整的FM模型公式为</p>
+<p>\begin{align}<br>\hat y = \omega_0 + \sum_{i=1}^{n}\omega_{i}x_{i} + \frac{1}{2}\sum_{f=1}^{k}((\sum_{i=1}^{n}v_{i,f}x_{i})^2 - \sum_{i=1}^{n} v_{i,f}^2 x_i^2)<br>\end{align}</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>因子分解机可以处理 Regression/Classification/Ranking问题</p>
+<h3 id="回归问题"><a href="#回归问题" class="headerlink" title="回归问题"></a>回归问题</h3><p>回归问题中, 使用最小均方误差作为优化目标</p>
+<p>\begin{align}<br>loss^{R}(\hat y, y) = \frac{1}{2m}\sum_{i=1}^{m}(\hat y^{(i)} - y^{(i)})^2<br>\end{align}</p>
+<h3 id="分类问题"><a href="#分类问题" class="headerlink" title="分类问题"></a>分类问题</h3><p>CTR预测本质上就是一个二元分类问题, 结果为点击的概率。分类问题中 logloss 做损失函数, \( \sigma \) 为 sigmoid函数</p>
+<p>\begin{align}<br>loss^{C}(\hat y, y) = \sum_{i=1}^{m} -ln\sigma(\hat y^{(i)}y^{(i)})<br>\end{align}</p>
+<h3 id="梯度下降"><a href="#梯度下降" class="headerlink" title="梯度下降"></a>梯度下降</h3><p>梯度下降公式为</p>
+<p>\begin{align}<br>\theta = \theta - \alpha\frac{\partial{loss}}{\partial\theta}<br>\end{align}</p>
+<p>其中 \( \theta \) 为带求解的参数, 为 \( \omega_{0}\), \( \omega_{i} \), \( v_{i,f} \)</p>
+<p>模型训练与预测的代码实现: <a href="https://github.com/Tara-X/algo/tree/master/fm" target="_blank" rel="noopener">https://github.com/Tara-X/algo/tree/master/fm</a></p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>作为一个2010年提出的模型, FM在工业界还依然有着很广泛的应用， 比如CTR预估, LearningToRank, 而且衍生出了DeepFM这种融合了深度学习的模型, FM模型的优点很明显</p>
+<ul>
+<li>适用于CTR预估这种稀疏矩阵的情况</li>
+<li>做好特征工程后就不用考虑组合特征了, 如果是在LR模型中添加组合特征, 则需要极其深刻的领域知识</li>
+<li>在线上进行预测时候速度快, 模型训练也快</li>
+</ul>
+<p>下面简单的使用FM对 Kaggle criteo challenge 进行点击率预估</p>
+<h2 id="工业实现"><a href="#工业实现" class="headerlink" title="工业实现"></a>工业实现</h2><ul>
+<li>libFM</li>
+<li>SVDFeature</li>
+<li>difacto</li>
+</ul>
+<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><ul>
+<li><a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf" target="_blank" rel="noopener">Factorization Machines论文</a></li>
+<li><a href="https://www.csie.ntu.edu.tw/~b97053/paper/Factorization%20Machines%20with%20libFM.pdf" target="_blank" rel="noopener">libfm实现</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/39848122" target="_blank" rel="noopener">从FM推演各深度CTR预估模型</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/50426292" target="_blank" rel="noopener">FM（Factorization Machines）的理论与实践</a></li>
+<li><a href="https://blog.csdn.net/g11d111/article/details/77430095" target="_blank" rel="noopener">FM算法（Factorization Machine）</a></li>
+<li><a href="https://blog.csdn.net/hiwallace/article/details/81333604" target="_blank" rel="noopener">FM系列算法解读（FM+FFM+DeepFM）</a></li>
+</ul>
+<blockquote>
+<p>原创文章，转载请注明：转载自<a href="http://stackbox.cn">叠搭宝箱</a>的博客<br>本文链接地址: <a href="https://stackbox.cn/2018-12-factorization-machine/">https://stackbox.cn/2018-12-factorization-machine/</a></p>
+</blockquote>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-18T02:59:03.992Z" itemprop="dateModified">2018-12-18</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018-11-logistic-regression/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">逻辑回归</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+  
+<!--mathjax import -->
+<script type="text/x-mathjax-config">MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+    });
+</script>
+<script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>

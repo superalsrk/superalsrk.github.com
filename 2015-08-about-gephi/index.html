@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>使用Gephi生成网络图 | 叠搭宝箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 擅长处理图数据">
+<meta name="keywords" content="传播路径图,图软件,Gephi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Gephi生成网络图">
+<meta property="og:url" content="http://stackbox.cn/2015-08-about-gephi/index.html">
+<meta property="og:site_name" content="叠搭宝箱">
+<meta property="og:description" content="Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 擅长处理图数据">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://7jptw8.com1.z0.glb.clouddn.com/gephi/programming-rel.png">
+<meta property="og:image" content="http://7jptw8.com1.z0.glb.clouddn.com/gephi/weibo.png">
+<meta property="og:updated_time" content="2018-12-17T11:06:52.431Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Gephi生成网络图">
+<meta name="twitter:description" content="Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 擅长处理图数据">
+<meta name="twitter:image" content="http://7jptw8.com1.z0.glb.clouddn.com/gephi/programming-rel.png">
+<meta name="twitter:creator" content="@superalsrk">
+  
+    <link rel="alternate" href="/atom.xml" title="叠搭宝箱" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?023671609eb87ab0b372df8f19b59d48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">叠搭宝箱</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/about">About</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-github-link" class="nav-icon" href="https://github.com/superalsrk" title="Github" target="_blank"></a>
+        
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://stackbox.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2015-08-about-gephi" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    
+<a href="/2015-08-about-gephi/" class="article-date">
+  <time datetime="2015-08-26T03:38:00.000Z" itemprop="datePublished">2015-08-26</time>
+</a>
+
+
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用Gephi生成网络图
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+		
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Gephi是一款开源免费跨平台基于JVM的复杂网络分析软件, 其主要用于各种网络和复杂系统, 特别是在处理网络关系数据这方面很有优势,下面是两个不错的例子</p>
+<a id="more"></a>
+<ul>
+<li><a href="http://exploringdata.github.io/vis/programmers-search-relations/" target="_blank" rel="noopener">编程语言关系图</a></li>
+</ul>
+<p><img src="http://7jptw8.com1.z0.glb.clouddn.com/gephi/programming-rel.png" alt=""></p>
+<ul>
+<li><a href="http://www.weiboreach.com/Try/exa2.jsp?val=3839629461690386_1684941721" target="_blank" rel="noopener">微博传播分析</a></li>
+</ul>
+<p><img src="http://7jptw8.com1.z0.glb.clouddn.com/gephi/weibo.png" alt=""></p>
+<p>那么,我们拿到原始数据后, 怎么才能画出这样的图表呢？</p>
+<h2 id="布局文件生成"><a href="#布局文件生成" class="headerlink" title="布局文件生成"></a>布局文件生成</h2><p>通过上面两个例子可以分析出,这类图表可以通过 <a href="http://sigmajs.org/" target="_blank" rel="noopener">sigma.js</a> 画出来,但是插件本身并不提供预处理数据&amp;&amp;布局功能,所以在绘制图表的时候需要有一份数据文件来详细的表明<code>节点名称,颜色,大小,横坐标, 纵坐标,边的起始节点</code>,这类数据一般用 gexf(xml格式) 或者 json来表示. </p>
+<p>生成gexf需要用到布局算法, 常见的有 <a href="https://en.wikipedia.org/wiki/Force-directed_graph_drawing" target="_blank" rel="noopener">Force-directed_graph_drawing</a> 力导向算法, <code>算法的核心思想是节点之间产生斥力,边给两个节点提供拉力,通过多次迭代最后维持一个稳定状态</code>，手动实现布局算法还是有一些复杂度的,好在gephi-tookit组件提供了API来处理数据, 首先在maven项目中加入gephi的仓库和依赖<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repositories</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>gephi-snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">name</span>&gt;</span>Gephi Snapshots<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://nexus.gephi.org/nexus/content/repositories/snapshots/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>gephi-releases<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">name</span>&gt;</span>Gephi Releases<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://nexus.gephi.org/nexus/content/repositories/releases/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repositories</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.gephi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>gephi-toolkit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.8.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>添加依赖完成之后,参考这个 <a href="http://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit" target="_blank" rel="noopener">slide</a>, 根据需求构造一个有向图,并调用布局算法, 最后导出成gexf和pdf文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);</span><br><span class="line">pc.newProject();</span><br><span class="line">Workspace workspace = pc.getCurrentWorkspace();</span><br><span class="line"></span><br><span class="line"><span class="comment">//Generate a new random graph into a container</span></span><br><span class="line">Container container = Lookup.getDefault().lookup(ContainerFactory.class).newContainer();</span><br><span class="line"></span><br><span class="line">GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();</span><br><span class="line">DirectedGraph graph = graphModel.getDirectedGraph();</span><br><span class="line"></span><br><span class="line">Node n0 = graphModel.factory().newNode(<span class="string">"n0"</span>);</span><br><span class="line">n0.getNodeData().setLabel(<span class="string">"n0"</span>);</span><br><span class="line">Node n1 = graphModel.factory().newNode(<span class="string">"n1"</span>);</span><br><span class="line">n1.getNodeData().setLabel(<span class="string">"n1"</span>);</span><br><span class="line">Edge edge = graphModel.factory().newEdge(n0, n1, <span class="number">1f</span>, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">graph.addNode(n0);</span><br><span class="line">graph.addNode(n1);</span><br><span class="line">graph.addEdge(edge);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">   Node ntmp = graphModel.factory().newNode(<span class="string">"tmp"</span> + i);</span><br><span class="line">   Edge edgetmp = graphModel.factory().newEdge(n0, ntmp, <span class="number">1f</span>, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">   graph.addNode(ntmp);</span><br><span class="line">   graph.addEdge(edgetmp);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">"Nodes: "</span> + graph.getNodeCount());</span><br><span class="line">System.out.println(<span class="string">"Edges: "</span> + graph.getEdgeCount());</span><br><span class="line"></span><br><span class="line"><span class="comment">//Layout for 15 seconds</span></span><br><span class="line">AutoLayout autoLayout = <span class="keyword">new</span> AutoLayout(<span class="number">20</span>, TimeUnit.SECONDS);</span><br><span class="line">autoLayout.setGraphModel(graphModel);</span><br><span class="line">YifanHuLayout firstLayout = <span class="keyword">new</span> YifanHuLayout(<span class="keyword">null</span>, <span class="keyword">new</span> StepDisplacement(<span class="number">1f</span>));</span><br><span class="line">ForceAtlasLayout secondLayout = <span class="keyword">new</span> ForceAtlasLayout(<span class="keyword">null</span>);</span><br><span class="line">AutoLayout.DynamicProperty adjustBySizeProperty = AutoLayout.createDynamicProperty(<span class="string">"forceAtlas.adjustSizes.name"</span>, Boolean.TRUE, <span class="number">0.1f</span>);<span class="comment">//True after 10% of layout time</span></span><br><span class="line">AutoLayout.DynamicProperty repulsionProperty = AutoLayout.createDynamicProperty(<span class="string">"forceAtlas.repulsionStrength.name"</span>, <span class="keyword">new</span> Double(<span class="number">500</span>.), <span class="number">0f</span>);<span class="comment">//500 for the complete period</span></span><br><span class="line">autoLayout.addLayout(firstLayout, <span class="number">0.9f</span>);</span><br><span class="line">autoLayout.addLayout(secondLayout, <span class="number">0.1f</span>, <span class="keyword">new</span> AutoLayout.DynamicProperty[]&#123;adjustBySizeProperty, repulsionProperty&#125;);</span><br><span class="line">autoLayout.execute();</span><br><span class="line"></span><br><span class="line"><span class="comment">//Export pdf &amp; gexf</span></span><br><span class="line">ExportController ec = Lookup.getDefault().lookup(ExportController.class);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">    File pdfFile = <span class="keyword">new</span> File(<span class="string">"/tmp/data.pdf"</span>);</span><br><span class="line">    File gexfFile = <span class="keyword">new</span> File(<span class="string">"/tmp/data.gexf"</span>);</span><br><span class="line"></span><br><span class="line">    pdfFile.getParentFile().mkdirs();</span><br><span class="line">    gexfFile.getParentFile().mkdirs();</span><br><span class="line">    ec.exportFile(pdfFile);</span><br><span class="line">    ec.exportFile(gexfFile);</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">    ex.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="图表绘制"><a href="#图表绘制" class="headerlink" title="图表绘制"></a>图表绘制</h2><p>在得到数据文件后可以参考这个 <strong><a href="https://nagland.github.io/201509/sigmajs/index.html" target="_blank" rel="noopener">Online Demo</a></strong> 来绘制图表。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://gephi.github.io/" target="_blank" rel="noopener">http://gephi.github.io/</a></li>
+<li><a href="http://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit" target="_blank" rel="noopener">http://www.slideshare.net/gephi/gephi-toolkit-tutorialtoolkit</a></li>
+<li><a href="https://github.com/gephi/gephi/wiki/How-to-code-with-the-Toolkit" target="_blank" rel="noopener">https://github.com/gephi/gephi/wiki/How-to-code-with-the-Toolkit</a></li>
+</ol>
+<h2 id="Update"><a href="#Update" class="headerlink" title="Update:"></a>Update:</h2><ol>
+<li>关于gexf文件的生成, 可以用这个python库: <a href="https://github.com/paulgirard/pygexf" target="_blank" rel="noopener">https://github.com/paulgirard/pygexf</a></li>
+<li>纯前端的话, sigma.js 提供了插件 <a href="https://github.com/jacomyal/sigma.js/tree/master/plugins/sigma.layout.forceAtlas2" target="_blank" rel="noopener">https://github.com/jacomyal/sigma.js/tree/master/plugins/sigma.layout.forceAtlas2</a> 来实现力导向算法</li>
+</ol>
+<p>THE END</p>
+
+      
+    </div>
+
+   
+
+    <footer class="article-footer">
+	  
+	  <!-- 百度分享 Start -->
+	  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+	  <!-- 百度分享 End -->
+	  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+
+    
+<span>
+更新日期:<time datetime="2018-12-17T11:06:52.431Z" itemprop="dateModified">2018-12-17</time>
+</span>
+
+
+    
+      
+        
+
+    <div id="commentsbox"></div>
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.css?v=0.0.0">
+    <script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script>
+    <script type="text/javascript" src="//cdn.bootcss.com/gitalk/1.4.1/gitalk.min.js?v=0.0.0"></script>
+    
+    <script>var gitalk = new Gitalk({
+        clientID: '4bc95ec3ac354b32457f',
+        clientSecret: 'f94bbda0540f91292aed00012e637addce3f2b0e',
+        repo: 'superalsrk.github.com',
+        owner: 'superalsrk',
+        admin: ['superalsrk'],
+        id: md5(location.pathname),
+        distractionFreeMode: false
+      })
+      gitalk.render('commentsbox')
+      </script>
+
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015-10-13-upgrade-gcc-error-md/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          由升级GCC引发的惨案
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015-07-hdfs-pathfilter-not-work/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">PathFilter无法生效</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          
+<aside id="sidebar">
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">ABOUT ME</h3>
+  <ul class="widget about-me">
+    
+    <li><img class="author" title="About me" src="/images/ua.jpg"></li>
+    
+    
+    <li>Hi,I'm superalsrk.</li>
+    
+  </ul>
+</div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/数据开发/">数据开发</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/生活记录/">生活记录</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计算机基础/">计算机基础</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据开发/">数据开发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活记录/">生活记录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算机基础/">计算机基础</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 20px; color: #1db400">Java</a> <a href="/tags/工具/" style="font-size: 20px; color: #1db400">工具</a> <a href="/tags/性能优化/" style="font-size: 13px; color: #7dc3de">性能优化</a> <a href="/tags/数据开发/" style="font-size: 13px; color: #7dc3de">数据开发</a> <a href="/tags/机器学习/" style="font-size: 13px; color: #7dc3de">机器学习</a> <a href="/tags/爬虫/" style="font-size: 13px; color: #7dc3de">爬虫</a> <a href="/tags/生活记录/" style="font-size: 15.33px; color: #5dbe94">生活记录</a> <a href="/tags/算法/" style="font-size: 17.67px; color: #3db94a">算法</a> <a href="/tags/计算机基础/" style="font-size: 17.67px; color: #3db94a">计算机基础</a>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018-12-factorization-machine/">Factorization Machine</a>
+          </li>
+        
+          <li>
+            <a href="/2018-11-logistic-regression/">逻辑回归</a>
+          </li>
+        
+          <li>
+            <a href="/2018-10-linear-regression/">线性回归</a>
+          </li>
+        
+          <li>
+            <a href="/2017-10-consistent-hashing-intro/">理解一致性Hash算法</a>
+          </li>
+        
+          <li>
+            <a href="/2017-07-2017-mid-schedule/">2017年中总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+  
+    
+<div class="widget-wrap">
+  <h3 class="widget-title">友情链接</h3>
+  <ul class="widget">
+    
+    <li><a href="http://wilbeibi.com/" target="_BLANK">Gates of Janus</a></li>
+    
+    <li><a href="http://uranux.com/" target="_BLANK">Uranux小彬彬</a></li>
+    
+    <li><a href="http://choco.properties/" target="_BLANK">天羽ちよこ</a></li>
+    
+    <li><a href="http://blog.tesop.cn/" target="_BLANK">Tesop彬哥</a></li>
+    
+  </ul>
+</div>
+
+
+  
+
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 叠搭宝箱<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and Theme by <a href="https://github.com/howiefh/hexo-theme-landscape-f" target="_blank" title="Landscape-F">Landscape-F</a>
+    
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav>
+    
+
+
+<!-- 百度分享 start -->
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","douban","bdysc","sqq","qq","hi","baidu","huaban","youdao","sdo","mail","xg","diandian","fx","copy","print"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到","viewSize":"16"}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- 百度分享 end -->
+
+
+
+
+<script src="/js/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<div class="bottom-btn">
+
+	<a class="icon-gotop" href="javascript:void(0)" title="返回顶部"></a>
+	<script src="/js/gotop.js"></script>
+
+
+</div>
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  </div>
+</body>
+</html>
