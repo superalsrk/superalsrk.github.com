@@ -1,6 +1,6 @@
 ---
 title: Factorization Machine
-date: 2018-11-16 20:16:53
+date: 2018-12-16 20:16:53
 categories: ['机器学习']
 tags: [ "算法"]
 description: 因子分解机从入门到实践
